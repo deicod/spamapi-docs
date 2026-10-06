@@ -1,0 +1,951 @@
+openapi: 3.0.3
+info:
+  title: SpamAPI
+  version: 1.0.0
+  description: REST API for spam detection and dashboard management.
+servers:
+  - url: https://spamapi.de
+paths:
+  /api/v1/verify-key:
+    post:
+      summary: Verify API key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyKeyRequest"
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyKeyResponse"
+  /api/v1/check:
+    post:
+      summary: Check content for spam
+      security:
+        - ApiKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckRequest"
+      responses:
+        "200":
+          description: Check result
+          headers:
+            X-SpamAPI-Pro-Tip:
+              schema:
+                type: string
+            X-SpamAPI-Request-ID:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckResponse"
+        "401":
+          $ref: "#/components/responses/AuthError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "503":
+          description: Classification provider failed or timed out; no decision or classification usage charge.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: detection_unavailable
+                message: spam classification is temporarily unavailable
+  /api/v1/submit-spam:
+    post:
+      summary: Report false negative (spam)
+      security:
+        - ApiKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedbackRequest"
+      responses:
+        "200":
+          description: Feedback accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeedbackResponse"
+  /api/v1/submit-ham:
+    post:
+      summary: Report false positive (ham)
+      security:
+        - ApiKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedbackRequest"
+      responses:
+        "200":
+          description: Feedback accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeedbackResponse"
+  /api/v1/usage:
+    get:
+      summary: Get usage summary
+      security:
+        - ApiKeyHeader: []
+      responses:
+        "200":
+          description: Usage summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsageResponse"
+  /api/v1/sites:
+    get:
+      summary: List sites
+      security:
+        - ApiKeyHeader: []
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+            minimum: 0
+            maximum: 100
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        "200":
+          description: Site list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SitesResponse"
+  /dashboard/api/account:
+    get:
+      summary: Get account details
+      security:
+        - SessionAuth: []
+      responses:
+        "200":
+          description: Account details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountResponse"
+    patch:
+      summary: Initiate email address change
+      security:
+        - SessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountUpdateRequest"
+      responses:
+        "200":
+          description: Current account; the new email takes effect after confirmation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountResponse"
+  /dashboard/api/api-keys:
+    get:
+      summary: List API keys
+      security:
+        - SessionAuth: []
+      responses:
+        "200":
+          description: API keys
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIKeyListResponse"
+    post:
+      summary: Create API key
+      security:
+        - SessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/APIKeyCreateRequest"
+      responses:
+        "200":
+          description: Created API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIKeyCreateResponse"
+  /dashboard/api/api-keys/{id}:
+    delete:
+      summary: Delete API key
+      security:
+        - SessionAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+  /dashboard/api/usage/summary:
+    get:
+      summary: Dashboard usage summary
+      security:
+        - SessionAuth: []
+      responses:
+        "200":
+          description: Usage summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardUsageSummary"
+  /dashboard/api/usage/history:
+    get:
+      summary: Dashboard usage history
+      security:
+        - SessionAuth: []
+      parameters:
+        - in: query
+          name: months
+          schema:
+            type: integer
+            default: 6
+            minimum: 1
+            maximum: 24
+      responses:
+        "200":
+          description: Usage history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsageHistoryResponse"
+  /dashboard/api/sites:
+    get:
+      summary: Dashboard sites list
+      security:
+        - SessionAuth: []
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+            minimum: 0
+            maximum: 100
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        "200":
+          description: Sites
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSitesResponse"
+  /dashboard/api/billing/subscription:
+    get:
+      summary: Billing subscription
+      security:
+        - SessionAuth: []
+      responses:
+        "200":
+          description: Subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillingSubscription"
+  /dashboard/api/billing/checkout:
+    post:
+      summary: Create checkout session
+      security:
+        - SessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BillingCheckoutRequest"
+      responses:
+        "200":
+          description: Checkout URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillingCheckoutResponse"
+  /dashboard/api/billing/portal:
+    post:
+      summary: Create portal session
+      security:
+        - SessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BillingPortalRequest"
+      responses:
+        "200":
+          description: Portal URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillingPortalResponse"
+  /auth/register:
+    post:
+      summary: Register account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRegisterRequest"
+      responses:
+        "201":
+          description: Auth result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthLoginRequest"
+      responses:
+        "200":
+          description: Auth result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+  /auth/logout:
+    post:
+      summary: Logout
+      security:
+        - SessionAuth: []
+      responses:
+        "204":
+          description: Logged out
+  /auth/me:
+    get:
+      summary: Current user
+      security:
+        - SessionAuth: []
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthMeResponse"
+  /auth/verify:
+    post:
+      summary: Verify email address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthTokenRequest"
+      responses:
+        "200":
+          description: Verified user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountResponse"
+  /auth/confirm-email-change:
+    post:
+      summary: Confirm email address change
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthTokenRequest"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountResponse"
+  /auth/forgot:
+    post:
+      summary: Request password reset email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthForgotRequest"
+      responses:
+        "202":
+          description: Password reset request accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthForgotResponse"
+  /auth/reset:
+    post:
+      summary: Reset password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthResetRequest"
+      responses:
+        "200":
+          description: User with updated password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPublic"
+  /webhooks/stripe:
+    post:
+      summary: Stripe webhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Accepted
+components:
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    SessionAuth:
+      type: http
+      scheme: bearer
+  responses:
+    AuthError:
+      description: Authentication error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    RateLimitError:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        request_id:
+          type: string
+      required: [error, message]
+    VerifyKeyRequest:
+      type: object
+      properties:
+        api_key:
+          type: string
+        blog:
+          type: string
+      required: [api_key]
+    VerifyKeyResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        plan:
+          type: string
+        usage:
+          $ref: "#/components/schemas/UsageInfo"
+      required: [valid]
+    CheckRequest:
+      type: object
+      properties:
+        api_key:
+          type: string
+        blog:
+          type: string
+        user_ip:
+          type: string
+        user_agent:
+          type: string
+        referrer:
+          type: string
+        permalink:
+          type: string
+        comment_type:
+          type: string
+        comment_author:
+          type: string
+        comment_author_email:
+          type: string
+        comment_author_url:
+          type: string
+        comment_content:
+          type: string
+        comment_date_gmt:
+          type: string
+        blog_lang:
+          type: string
+        blog_charset:
+          type: string
+        user_role:
+          type: string
+        is_test:
+          type: boolean
+        recheck_reason:
+          type: string
+        honeypot_field_name:
+          type: string
+        honeypot_field_value:
+          type: string
+      required: [blog, user_ip]
+    CheckResponse:
+      type: object
+      properties:
+        is_spam:
+          type: boolean
+        score:
+          type: number
+          format: float
+        recommendation:
+          type: string
+          enum: [allow, review, discard]
+        reasons:
+          type: array
+          items:
+            type: string
+        request_id:
+          type: string
+      required: [is_spam, score, recommendation, request_id]
+    FeedbackRequest:
+      type: object
+      properties:
+        api_key:
+          type: string
+        blog:
+          type: string
+        user_ip:
+          type: string
+          description: Client IPv4 or IPv6 address.
+        user_agent:
+          type: string
+        comment_type:
+          type: string
+        comment_author:
+          type: string
+        comment_author_email:
+          type: string
+        comment_content:
+          type: string
+      required: [blog, user_ip]
+    FeedbackResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok]
+      required: [status]
+    UsageInfo:
+      type: object
+      properties:
+        limit:
+          type: integer
+        used:
+          type: integer
+        percentage:
+          type: string
+        resets_at:
+          type: string
+          format: date-time
+      required: [limit, used, percentage, resets_at]
+    UsageResponse:
+      type: object
+      properties:
+        limit:
+          type: integer
+        used:
+          type: integer
+        percentage:
+          type: string
+        resets_at:
+          type: string
+          format: date-time
+        throttled:
+          type: boolean
+      required: [limit, used, percentage, resets_at, throttled]
+    UsageHistoryResponse:
+      type: object
+      properties:
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/UsageHistoryItem"
+      required: [history]
+    UsageHistoryItem:
+      type: object
+      properties:
+        month:
+          type: string
+          format: date-time
+        spam_checks:
+          type: integer
+        spam_detected:
+          type: integer
+        ham_detected:
+          type: integer
+        submit_spam:
+          type: integer
+        submit_ham:
+          type: integer
+      required: [month, spam_checks, spam_detected, ham_detected, submit_spam, submit_ham]
+    SitesResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        sites:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteInfo"
+        limit:
+          type: integer
+        offset:
+          type: integer
+      required: [sites, total, limit, offset]
+    SiteInfo:
+      type: object
+      properties:
+        site:
+          type: string
+        api_calls:
+          type: integer
+        spam:
+          type: integer
+        ham:
+          type: integer
+        missed_spam:
+          type: integer
+        false_positives:
+          type: integer
+        first_seen:
+          type: string
+          format: date-time
+        last_seen:
+          type: string
+          format: date-time
+      required: [site, api_calls, spam, ham, missed_spam, false_positives, first_seen, last_seen]
+    DashboardSitesResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        sites:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardSiteInfo"
+        limit:
+          type: integer
+        offset:
+          type: integer
+      required: [sites, total, limit, offset]
+    DashboardSiteInfo:
+      type: object
+      properties:
+        blog_url:
+          type: string
+        total_checks:
+          type: integer
+        total_spam:
+          type: integer
+        total_ham:
+          type: integer
+        first_seen_at:
+          type: string
+          format: date-time
+        last_seen_at:
+          type: string
+          format: date-time
+      required: [blog_url, total_checks, total_spam, total_ham, first_seen_at, last_seen_at]
+    AccountResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserPublic"
+      required: [user]
+    UserPublic:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+        is_verified:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        verified_at:
+          type: string
+          format: date-time
+        last_login_at:
+          type: string
+          format: date-time
+      required: [id, email, username, role, is_verified, created_at, updated_at]
+    AccountUpdateRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+      required: [email, password]
+    APIKeyCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required: [name]
+    APIKeyCreateResponse:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Complete API key, returned only during creation.
+        api_key:
+          $ref: "#/components/schemas/APIKey"
+      required: [key, api_key]
+    APIKeyListResponse:
+      type: object
+      properties:
+        keys:
+          type: array
+          items:
+            $ref: "#/components/schemas/APIKey"
+      required: [keys]
+    APIKey:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        prefix:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        last_used_at:
+          type: string
+          format: date-time
+        revoked_at:
+          type: string
+          format: date-time
+      required: [id, name, prefix, created_at]
+    DashboardUsageSummary:
+      type: object
+      properties:
+        plan:
+          type: string
+        status:
+          type: string
+        limit:
+          type: integer
+        used:
+          type: integer
+        percentage:
+          type: string
+        resets_at:
+          type: string
+          format: date-time
+      required: [plan, status, limit, used, percentage, resets_at]
+    BillingSubscription:
+      type: object
+      properties:
+        subscription:
+          $ref: "#/components/schemas/SubscriptionInfo"
+      required: [subscription]
+    SubscriptionInfo:
+      type: object
+      properties:
+        plan:
+          type: string
+        status:
+          type: string
+        api_calls_limit:
+          type: integer
+        current_period_start:
+          type: string
+          format: date-time
+        current_period_end:
+          type: string
+          format: date-time
+        cancel_at:
+          type: string
+          format: date-time
+          description: Scheduled end of an ongoing subscription, which keeps its status until then; absent when no cancellation is scheduled.
+        stripe_customer_id:
+          type: string
+        stripe_subscription_id:
+          type: string
+      required: [plan, status, api_calls_limit, current_period_start, current_period_end]
+    BillingCheckoutRequest:
+      type: object
+      properties:
+        plan:
+          type: string
+        success_url:
+          type: string
+          format: uri
+          description: Redirect URL on the application's origin.
+        cancel_url:
+          type: string
+          format: uri
+          description: Redirect URL on the application's origin.
+      required: [plan, success_url, cancel_url]
+    BillingCheckoutResponse:
+      type: object
+      properties:
+        url:
+          type: string
+      required: [url]
+    BillingPortalRequest:
+      type: object
+      properties:
+        return_url:
+          type: string
+          format: uri
+          description: Redirect URL on the application's origin.
+      required: [return_url]
+    BillingPortalResponse:
+      type: object
+      properties:
+        url:
+          type: string
+      required: [url]
+    AuthRegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+      required: [email, username, password]
+    AuthLoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+    AuthTokenRequest:
+      type: object
+      properties:
+        token:
+          type: string
+      required: [token]
+    AuthForgotRequest:
+      type: object
+      properties:
+        email:
+          type: string
+      required: [email]
+    AuthResetRequest:
+      type: object
+      properties:
+        token:
+          type: string
+        new_password:
+          type: string
+          writeOnly: true
+      required: [token, new_password]
+    AuthResult:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserPublic"
+        token:
+          type: string
+          description: Session token for Authorization Bearer authentication.
+        session:
+          $ref: "#/components/schemas/SessionPublic"
+      required: [user, token, session]
+    SessionPublic:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        user_agent:
+          type: string
+        ip:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        revoked:
+          type: boolean
+      required: [id, user_id, user_agent, ip, expires_at, created_at, revoked]
+    AuthMeResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserPublic"
+        session:
+          $ref: "#/components/schemas/SessionPublic"
+      required: [user, session]
+    AuthForgotResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [email_sent]
+      required: [status]

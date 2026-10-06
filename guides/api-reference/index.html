@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://deicod.github.io/spamapi-docs/guides/api-reference/">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>API reference - SpamAPI Documentation</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" disabled>
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../..">SpamAPI Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../.." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Integrate</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../getting-started/" class="dropdown-item">Getting started</a>
+</li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">API reference</a>
+</li>
+                                    
+<li>
+    <a href="../wordpress-plugin/" class="dropdown-item">WordPress plugin</a>
+</li>
+                                    
+<li>
+    <a href="../test-mode/" class="dropdown-item">Test mode</a>
+</li>
+                                    
+<li>
+    <a href="../troubleshooting/" class="dropdown-item">Troubleshooting</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../security/" class="nav-link">Security policy</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../getting-started/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../wordpress-plugin/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                              <button id="theme-menu" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme" class="nav-link dropdown-toggle">
+                                <i class="fa-solid fa-circle-half-stroke fa-fw"></i>
+                                <span class="d-lg-none ms-2">Toggle theme</span>
+                              </button>
+                              <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                  <button class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+                                    <i class="fa-solid fa-sun fa-fw"></i>
+                                    <span class="ms-2">Light</span>
+                                    <i class="fa-solid fa-check ms-auto d-none"></i>
+                                  </button>
+                                </li>
+                                <li>
+                                  <button class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+                                    <i class="fa-solid fa-moon fa-fw"></i>
+                                    <span class="ms-2">Dark</span>
+                                    <i class="fa-solid fa-check ms-auto d-none"></i>
+                                  </button>
+                                </li>
+                                <li>
+                                  <button class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="true">
+                                    <i class="fa-solid fa-circle-half-stroke fa-fw"></i>
+                                    <span class="ms-2">Auto</span>
+                                    <i class="fa-solid fa-check ms-auto"></i>
+                                  </button>
+                                </li>
+                              </ul>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <script src="../../js/darkmode.js"></script>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#api-reference" class="nav-link">API Reference</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#public-api-api-key" class="nav-link">Public API (API Key)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#public-api-responses" class="nav-link">Public API Responses</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#dashboard-api-session" class="nav-link">Dashboard API (Session)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#auth-api" class="nav-link">Auth API</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#error-format" class="nav-link">Error Format</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#usage-headers" class="nav-link">Usage Headers</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#rate-limit-headers" class="nav-link">Rate Limit Headers</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#full-openapi-spec" class="nav-link">Full OpenAPI Spec</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<h2 id="public-api-api-key">Public API (API Key)<a class="headerlink" href="#public-api-api-key" title="Permanent link">&para;</a></h2>
+<p>Base path: <code>/api/v1</code></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>/verify-key</td>
+<td>Validate API key</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/check</td>
+<td>Check content for spam</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/submit-spam</td>
+<td>Report false negative</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/submit-ham</td>
+<td>Report false positive</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/usage</td>
+<td>Monthly usage summary</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/sites</td>
+<td>Sites using the key</td>
+</tr>
+</tbody>
+</table>
+<h2 id="public-api-responses">Public API Responses<a class="headerlink" href="#public-api-responses" title="Permanent link">&para;</a></h2>
+<p>Both feedback endpoints return HTTP <code>200</code> with a JSON acknowledgement:</p>
+<pre><code class="language-json">{&quot;status&quot;: &quot;ok&quot;}
+</code></pre>
+<p><code>GET /api/v1/usage</code> returns the current month's quota and usage. <code>percentage</code> is
+a decimal string; <code>resets_at</code> is a UTC timestamp; <code>throttled</code> indicates that the
+account has reached its quota. A paid plan's quota applies until its subscription
+ends, including the rest of a paid period after cancellation; the account then
+uses the Free quota.</p>
+<pre><code class="language-json">{
+  &quot;limit&quot;: 100,
+  &quot;used&quot;: 12,
+  &quot;percentage&quot;: &quot;12.00&quot;,
+  &quot;resets_at&quot;: &quot;2026-11-01T00:00:00Z&quot;,
+  &quot;throttled&quot;: false
+}
+</code></pre>
+<p><code>GET /api/v1/sites</code> returns <code>sites</code>, <code>total</code>, <code>limit</code>, and <code>offset</code>. Each site
+contains <code>site</code>, <code>api_calls</code>, <code>spam</code>, <code>ham</code>, <code>missed_spam</code>, <code>false_positives</code>,
+<code>first_seen</code>, and <code>last_seen</code>. Pagination defaults to 50 sites and is capped at
+100 per request. The dashboard's sites endpoint uses its own response schema.</p>
+<h2 id="dashboard-api-session">Dashboard API (Session)<a class="headerlink" href="#dashboard-api-session" title="Permanent link">&para;</a></h2>
+<p>Base path: <code>/dashboard/api</code></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>/account</td>
+<td>Get account</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>/account</td>
+<td>Initiate email change</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/api-keys</td>
+<td>List keys</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/api-keys</td>
+<td>Create key</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>/api-keys/{id}</td>
+<td>Delete key</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/usage/summary</td>
+<td>Usage summary</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/usage/history</td>
+<td>Usage history</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/sites</td>
+<td>Sites stats</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/billing/subscription</td>
+<td>Subscription</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/billing/checkout</td>
+<td>Checkout session</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/billing/portal</td>
+<td>Billing portal</td>
+</tr>
+</tbody>
+</table>
+<p>Authenticate with <code>Authorization: Bearer &lt;session-token&gt;</code>, using the token
+returned by registration or login. Account responses wrap the current user in
+<code>user</code>. Changing the account email requires both <code>email</code> and the current
+<code>password</code>; the response still contains the current email until confirmation.</p>
+<p>Creating a key returns HTTP <code>200</code> with <code>key</code> (the full credential, shown only
+once) and <code>api_key</code> (its metadata). Listing keys returns a <code>keys</code> array; deleting
+a key returns HTTP <code>204</code> with no body.</p>
+<p>Usage history returns a <code>history</code> array with <code>month</code>, <code>spam_checks</code>,
+<code>spam_detected</code>, <code>ham_detected</code>, <code>submit_spam</code>, and <code>submit_ham</code>. The lookback
+defaults to six months and is capped at 24. Subscription details are wrapped in
+<code>subscription</code>. While a canceled subscription remains active, <code>cancel_at</code> gives
+its scheduled end and <code>status</code> is unchanged; it is absent otherwise.</p>
+<p>Checkout requires <code>plan</code>, <code>success_url</code>, and <code>cancel_url</code>; the billing portal
+requires <code>return_url</code>. Redirect URLs must use the application's origin
+(<code>https://spamapi.de</code> for the hosted service). Both endpoints return <code>url</code>.</p>
+<h2 id="auth-api">Auth API<a class="headerlink" href="#auth-api" title="Permanent link">&para;</a></h2>
+<p>Base path: <code>/auth</code></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>/register</td>
+<td>Register</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/login</td>
+<td>Login</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/logout</td>
+<td>Logout</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/me</td>
+<td>Current user</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/verify</td>
+<td>Verify email</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/confirm-email-change</td>
+<td>Confirm email change</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/forgot</td>
+<td>Forgot password</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/reset</td>
+<td>Reset password</td>
+</tr>
+</tbody>
+</table>
+<p>Registration returns HTTP <code>201</code>; login returns HTTP <code>200</code>. Both return <code>user</code>,
+<code>token</code>, and <code>session</code>. <code>GET /auth/me</code> returns <code>user</code> and <code>session</code>, and logout
+returns HTTP <code>204</code> with no body.</p>
+<p>Email verification and email-change confirmation accept <code>token</code> and return
+<code>user</code>. Forgot-password accepts <code>email</code> and returns HTTP <code>202</code> with
+<code>{"status":"email_sent"}</code>. Reset-password accepts <code>token</code> and <code>new_password</code>
+and returns the user object directly.</p>
+<h2 id="error-format">Error Format<a class="headerlink" href="#error-format" title="Permanent link">&para;</a></h2>
+<p>The public and dashboard APIs use the following JSON error format. Auth
+handlers return a JSON <code>error</code> string; their rate limiter and the dashboard
+session middleware can return plain-text errors.</p>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;invalid_api_key&quot;,
+  &quot;message&quot;: &quot;Invalid API key&quot;,
+  &quot;request_id&quot;: &quot;req_123&quot;
+}
+</code></pre>
+<p><code>POST /api/v1/check</code> returns HTTP <code>503</code> with error code <code>detection_unavailable</code>
+when the selected classifier fails or times out. This error carries no spam
+decision, score, or recommendation. Failed classifications do not increment
+classification usage or update site statistics. See
+<a href="../troubleshooting/#503-service-unavailable">troubleshooting</a> for how to handle
+this response.</p>
+<h2 id="usage-headers">Usage Headers<a class="headerlink" href="#usage-headers" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>X-Usage-Limit</code></li>
+<li><code>X-Usage-Used</code></li>
+<li><code>X-Usage-Remaining</code></li>
+</ul>
+<h2 id="rate-limit-headers">Rate Limit Headers<a class="headerlink" href="#rate-limit-headers" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>X-RateLimit-Limit</code></li>
+<li><code>X-RateLimit-Remaining</code></li>
+<li><code>X-RateLimit-Reset</code></li>
+</ul>
+<h2 id="full-openapi-spec">Full OpenAPI Spec<a class="headerlink" href="#full-openapi-spec" title="Permanent link">&para;</a></h2>
+<p>See <a href="../../api/openapi.yaml">docs/api/openapi.yaml</a>.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
