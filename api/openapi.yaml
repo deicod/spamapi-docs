@@ -49,8 +49,26 @@ paths:
                 $ref: "#/components/schemas/CheckResponse"
         "401":
           $ref: "#/components/responses/AuthError"
+        "403":
+          description: Account access was removed before classification completion; no result writes are committed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: account_unavailable
+                message: account access unavailable
         "429":
           $ref: "#/components/responses/RateLimitError"
+        "500":
+          description: Classification persistence failed; usage, site statistics and log are rolled back and no decision is returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: persistence_error
+                message: failed to record classification
         "503":
           description: Classification provider failed or timed out; no decision or classification usage charge.
           content:
