@@ -379,9 +379,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VerifyKeyResponse"
+        "503":
+          description: Entitlement lookup failed; quota_unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /api/v1/check:
     post:
       summary: Check content for spam
+      description: |
+        A metered attempt reserves capacity before classification. Successful usage, site statistics and the log commit atomically before a decision is returned.
+        Usage belongs to the UTC admission month, including a completion after month end. Guaranteed-Spam and Test-Ham remain unmetered but still require available quota.
+        X-Request-ID is caller-controlled correlation, not an idempotency key. Every HTTP attempt receives a new internal UUID; retrying a lost response can charge a second attempt.
       security:
         - ApiKeyHeader: []
       requestBody:
@@ -418,16 +428,16 @@ paths:
         "429":
           $ref: "#/components/responses/RateLimitError"
         "500":
-          description: Classification persistence failed; usage, site statistics and log are rolled back and no decision is returned.
+          description: Classification failed; no decision is returned and the reservation is released when possible.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
               example:
-                error: persistence_error
-                message: failed to record classification
+                error: detection_error
+                message: failed to analyze content
         "503":
-          description: Classification provider failed or timed out; no decision or classification usage charge.
+          description: Classification provider or quota persistence is unavailable. No decision is returned. An ambiguous usage commit may have charged this attempt; recovery reconciles it by internal UUID. A new HTTP retry is a new attempt.
           content:
             application/json:
               schema:
@@ -483,6 +493,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UsageResponse"
+        "403":
+          description: Account is unavailable; account_unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Entitlement lookup failed; quota_unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /api/v1/sites:
     get:
       summary: List sites
@@ -957,6 +979,14 @@ components:
     UsageInfo:
       type: object
       properties:
+        reserved:
+          type: integer
+          minimum: 0
+          description: Live pending classification attempts in this UTC month.
+        remaining:
+          type: integer
+          minimum: 0
+          description: Capacity after used and reserved checks; zero for unlimited plans.
         limit:
           type: integer
         used:
@@ -966,10 +996,18 @@ components:
         resets_at:
           type: string
           format: date-time
-      required: [limit, used, percentage, resets_at]
+      required: [reserved, remaining, limit, used, percentage, resets_at]
     UsageResponse:
       type: object
       properties:
+        reserved:
+          type: integer
+          minimum: 0
+          description: Live pending classification attempts in this UTC month.
+        remaining:
+          type: integer
+          minimum: 0
+          description: Capacity after used and reserved checks; zero for unlimited plans.
         limit:
           type: integer
         used:
@@ -981,7 +1019,7 @@ components:
           format: date-time
         throttled:
           type: boolean
-      required: [limit, used, percentage, resets_at, throttled]
+      required: [reserved, remaining, limit, used, percentage, resets_at, throttled]
     UsageHistoryResponse:
       type: object
       properties:
@@ -1161,6 +1199,14 @@ components:
     DashboardUsageSummary:
       type: object
       properties:
+        reserved:
+          type: integer
+          minimum: 0
+          description: Live pending classification attempts in this UTC month.
+        remaining:
+          type: integer
+          minimum: 0
+          description: Capacity after used and reserved checks; zero for unlimited plans.
         plan:
           type: string
         status:
@@ -1174,7 +1220,7 @@ components:
         resets_at:
           type: string
           format: date-time
-      required: [plan, status, limit, used, percentage, resets_at]
+      required: [reserved, remaining, plan, status, limit, used, percentage, resets_at]
     BillingSubscription:
       type: object
       properties:
@@ -1388,6 +1434,8 @@ components:
     AdminDetailResponse:
       type: object
       properties:
+        entitlement:
+          $ref: "#/components/schemas/Entitlement"
         user:
           $ref: '#/components/schemas/AdminUser'
         keys:
@@ -1424,6 +1472,7 @@ components:
         effective_limit:
           type: integer
       required:
+      - entitlement
       - user
       - keys
       - keys_total
@@ -1435,6 +1484,44 @@ components:
       - projection_updated_at
       - effective_plan
       - effective_limit
+    Entitlement:
+      type: object
+      description: Shared local service entitlement; API credits and complimentary overrides remain deferred to issue 97.
+      properties:
+        eligible:
+          type: boolean
+        account_state:
+          type: string
+          enum: [active, suspended, closed]
+        projection_updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Local subscription projection timestamp; null means missing-row Free fallback. This is not live Stripe verification.
+        plan:
+          type: string
+        status:
+          type: string
+        limit:
+          type: integer
+          description: Effective allowance; zero retains the public unlimited sentinel.
+        unlimited:
+          type: boolean
+        used:
+          type: integer
+        reserved:
+          type: integer
+        remaining:
+          type: integer
+        month:
+          type: string
+          format: date-time
+        resets_at:
+          type: string
+          format: date-time
+        revision:
+          type: string
+      required: [eligible, account_state, projection_updated_at, plan, status, limit, unlimited, used, reserved, remaining, month, resets_at, revision]
     AdminAuditEvent:
       type: object
       properties:
