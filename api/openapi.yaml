@@ -6,6 +6,124 @@ info:
 servers:
   - url: https://spamapi.de
 paths:
+  /admin/api/users/{id}/actions:
+    post:
+      summary: Apply local account action
+      description: Local action; current version, reason and current authority checked
+        in the shared transaction. Role changes require a proof bound to the exact intent.
+        Self-demotion/suspension and closed accounts are rejected. No automatic retries.
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminActionRequest'
+      responses:
+        '200':
+          description: Applied result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminActionResult'
+        '400':
+          description: Invalid action, extra fields or invalid identity input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Session unavailable
+        '404':
+          description: User or target API key unavailable
+        '403':
+          description: admin_permission_lost redirects out of admin. reauth_required,
+            invalid_password and self_access_change are action-specific and preserve
+            admin navigation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: version_conflict requires reloading the target detail. username_exists
+            and last_admin allow correcting the input or retrying after the condition
+            changes. Never retry automatically.
+        '429':
+          description: Rate limit or one-minute password-reset cooldown
+        '500':
+          description: Transaction failed and rolled back; a commit acknowledgement
+            can be ambiguous, so refresh before any manual retry.
+        '202':
+          description: Password-reset request accepted, never a delivery receipt. No
+            automatic retry.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminActionResult'
+  /admin/api/users/{id}/reauthenticate:
+    post:
+      summary: Reauthenticate for a role change
+      description: Sessionless password check for a role-change intent; five-minute
+        single-use proof bound to actor, session, actor version, target and parameters.
+        Replaces the prior proof for this actor/session. Does not create a session or
+        change last-login.
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminReauthRequest'
+      responses:
+        '200':
+          description: Proof issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminReauthResult'
+        '400':
+          description: Invalid action, extra fields or invalid identity input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Session unavailable
+        '404':
+          description: User or target API key unavailable
+        '403':
+          description: admin_permission_lost redirects out of admin. reauth_required,
+            invalid_password and self_access_change are action-specific and preserve
+            admin navigation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: version_conflict requires reloading the target detail. username_exists
+            and last_admin allow correcting the input or retrying after the condition
+            changes. Never retry automatically.
+        '429':
+          description: Rate limit or one-minute password-reset cooldown
+        '500':
+          description: Transaction failed and rolled back; a commit acknowledgement
+            can be ambiguous, so refresh before any manual retry.
   /admin/api/users:
     get:
       summary: Search users
@@ -1469,3 +1587,174 @@ components:
           - message
       required:
       - error
+    AdminActionRequest:
+      oneOf:
+      - $ref: '#/components/schemas/AdminUsernameAction'
+      - $ref: '#/components/schemas/AdminSimpleAction'
+      - $ref: '#/components/schemas/AdminRevokeKeyAction'
+      - $ref: '#/components/schemas/AdminRoleAction'
+      discriminator:
+        propertyName: action
+        mapping:
+          username: '#/components/schemas/AdminUsernameAction'
+          suspend: '#/components/schemas/AdminSimpleAction'
+          restore: '#/components/schemas/AdminSimpleAction'
+          revoke_sessions: '#/components/schemas/AdminSimpleAction'
+          password_reset: '#/components/schemas/AdminSimpleAction'
+          revoke_key: '#/components/schemas/AdminRevokeKeyAction'
+          role: '#/components/schemas/AdminRoleAction'
+    AdminActionVersion:
+      type: integer
+      minimum: 1
+    AdminActionReason:
+      type: string
+      minLength: 3
+      maxLength: 500
+      description: 3–500 Unicode code points, with at least 3 after trimming surrounding whitespace.
+    AdminActionRole:
+      type: string
+      enum:
+      - user
+      - admin
+    AdminUsernameAction:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum:
+          - username
+        expected_version:
+          $ref: '#/components/schemas/AdminActionVersion'
+        reason:
+          $ref: '#/components/schemas/AdminActionReason'
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+      required:
+      - action
+      - expected_version
+      - reason
+      - username
+    AdminSimpleAction:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum:
+          - suspend
+          - restore
+          - revoke_sessions
+          - password_reset
+        expected_version:
+          $ref: '#/components/schemas/AdminActionVersion'
+        reason:
+          $ref: '#/components/schemas/AdminActionReason'
+      required:
+      - action
+      - expected_version
+      - reason
+    AdminRevokeKeyAction:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum:
+          - revoke_key
+        expected_version:
+          $ref: '#/components/schemas/AdminActionVersion'
+        reason:
+          $ref: '#/components/schemas/AdminActionReason'
+        key_id:
+          type: string
+          format: uuid
+      required:
+      - action
+      - expected_version
+      - reason
+      - key_id
+    AdminRoleAction:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum:
+          - role
+        expected_version:
+          $ref: '#/components/schemas/AdminActionVersion'
+        reason:
+          $ref: '#/components/schemas/AdminActionReason'
+        role:
+          $ref: '#/components/schemas/AdminActionRole'
+        proof:
+          type: string
+          format: uuid
+          writeOnly: true
+      required:
+      - action
+      - expected_version
+      - reason
+      - role
+      - proof
+    AdminRoleIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum:
+          - role
+        expected_version:
+          $ref: '#/components/schemas/AdminActionVersion'
+        reason:
+          $ref: '#/components/schemas/AdminActionReason'
+        role:
+          $ref: '#/components/schemas/AdminActionRole'
+      required:
+      - action
+      - expected_version
+      - reason
+      - role
+    AdminActionResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - applied
+          - request_accepted
+        user:
+          $ref: '#/components/schemas/AdminUser'
+      required:
+      - status
+      - user
+    AdminReauthRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+        intent:
+          $ref: '#/components/schemas/AdminRoleIntent'
+      required:
+      - password
+      - intent
+    AdminReauthResult:
+      type: object
+      properties:
+        proof:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - proof
+      - expires_at
