@@ -6,6 +6,245 @@ info:
 servers:
   - url: https://spamapi.de
 paths:
+  /admin/api/users:
+    get:
+      summary: Search users
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 1000000
+      - in: query
+        name: q
+        schema:
+          type: string
+          maxLength: 200
+        description: Literal case-insensitive substring of email or username, up to 200 Unicode code points after trimming whitespace.
+      responses:
+        '200':
+          description: Read-only result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminListResponse'
+        '401':
+          description: Invalid session or blocked account
+        '403':
+          description: admin_permission_lost; remove admin cache and exit /admin, preserving
+            a valid normal session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '400':
+          description: Invalid pagination/search/cursor
+        '404':
+          description: Unknown user
+        '500':
+          description: Local read failure
+  /admin/api/users/{id}:
+    get:
+      summary: Inspect user identity, access, usage and local billing projection
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: keys_limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+        description: Maximum active API keys in the embedded page.
+      - in: query
+        name: keys_offset
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 1000000
+          default: 0
+        description: Active-key page offset; ordered by created_at descending, then ID descending.
+      responses:
+        '200':
+          description: Read-only result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDetailResponse'
+        '401':
+          description: Invalid session or blocked account
+        '403':
+          description: admin_permission_lost; remove admin cache and exit /admin, preserving
+            a valid normal session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '400':
+          description: Invalid pagination/search/cursor
+        '404':
+          description: Unknown user
+        '500':
+          description: Local read failure
+  /admin/api/users/{id}/sites:
+    get:
+      summary: Inspect observed sites
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 1000000
+      responses:
+        '200':
+          description: Read-only result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSitesResponse'
+        '401':
+          description: Invalid session or blocked account
+        '403':
+          description: admin_permission_lost; remove admin cache and exit /admin, preserving
+            a valid normal session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '400':
+          description: Invalid pagination/search/cursor
+        '404':
+          description: Unknown user
+        '500':
+          description: Local read failure
+  /admin/api/users/{id}/audit:
+    get:
+      summary: Inspect audit history
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 1000000
+      responses:
+        '200':
+          description: Read-only result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminAuditResponse'
+        '401':
+          description: Invalid session or blocked account
+        '403':
+          description: admin_permission_lost; remove admin cache and exit /admin, preserving
+            a valid normal session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '400':
+          description: Invalid pagination/search/cursor
+        '404':
+          description: Unknown user
+        '500':
+          description: Local read failure
+  /admin/api/users/{id}/billing:
+    get:
+      summary: Inspect live Stripe subscription and invoices without writes
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: starting_after
+        schema:
+          type: string
+          maxLength: 100
+        description: Opaque Stripe invoice cursor, scoped by the stored customer ID.
+      responses:
+        '200':
+          description: Read-only result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminInspection'
+        '401':
+          description: Invalid session or blocked account, including original-session revocation or expiry during Stripe inspection; no billing data is returned. Middleware rejects invalid sessions as plain text; the final inspection recheck returns AdminError JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+            text/plain:
+              schema:
+                type: string
+        '403':
+          description: admin_permission_lost; remove admin cache and exit /admin, preserving
+            a valid normal session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '400':
+          description: Invalid pagination/search/cursor
+        '404':
+          description: Unknown user
+        '500':
+          description: Local read failure
+        '502':
+          description: Stripe inspection failed; local projection remains available.
+        '503':
+          description: Live billing inspection is not configured.
   /api/v1/verify-key:
     post:
       summary: Verify API key
@@ -967,3 +1206,266 @@ components:
           type: string
           enum: [email_sent]
       required: [status]
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+        is_verified:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        verified_at:
+          type: string
+          format: date-time
+        last_login_at:
+          type: string
+          format: date-time
+        state:
+          type: string
+          enum:
+          - active
+          - suspended
+          - closed
+        version:
+          type: integer
+      required:
+      - id
+      - email
+      - username
+      - role
+      - is_verified
+      - created_at
+      - updated_at
+      - state
+      - version
+    AdminListResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminUser'
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+      required:
+      - users
+      - total
+      - limit
+      - offset
+    AdminDetailResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/AdminUser'
+        keys:
+          type: array
+          maxItems: 100
+          description: Bounded page of active keys; credential hashes are never selected.
+          items:
+            $ref: '#/components/schemas/APIKey'
+        keys_total:
+          type: integer
+          minimum: 0
+        keys_limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        keys_offset:
+          type: integer
+          minimum: 0
+          maximum: 1000000
+        active_sessions:
+          type: integer
+        usage:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsageHistoryItem'
+        subscription:
+          $ref: '#/components/schemas/SubscriptionInfo'
+        projection_updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        effective_plan:
+          type: string
+        effective_limit:
+          type: integer
+      required:
+      - user
+      - keys
+      - keys_total
+      - keys_limit
+      - keys_offset
+      - active_sessions
+      - usage
+      - subscription
+      - projection_updated_at
+      - effective_plan
+      - effective_limit
+    AdminAuditEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        actor_id:
+          type: string
+        target_id:
+          type: string
+        action:
+          type: string
+        reason:
+          type: string
+        request_id:
+          type: string
+        before:
+          type: object
+          additionalProperties: true
+          nullable: true
+        after:
+          type: object
+          additionalProperties: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - actor_id
+      - target_id
+      - action
+      - reason
+      - request_id
+      - before
+      - after
+      - created_at
+    AdminAuditResponse:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminAuditEvent'
+        limit:
+          type: integer
+        offset:
+          type: integer
+        has_more:
+          type: boolean
+          description: Whether another audit page exists beyond this page.
+      required:
+      - events
+      - limit
+      - offset
+      - has_more
+    AdminInspectedSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        cancel_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - id
+      - status
+      - cancel_at
+    AdminInspectedInvoice:
+      type: object
+      properties:
+        id:
+          type: string
+        number:
+          type: string
+        status:
+          type: string
+        currency:
+          type: string
+        total:
+          type: integer
+        amount_paid:
+          type: integer
+        amount_due:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - number
+      - status
+      - currency
+      - total
+      - amount_paid
+      - amount_due
+      - created_at
+    AdminInspection:
+      type: object
+      properties:
+        bound:
+          type: boolean
+        livemode:
+          type: boolean
+        subscription:
+          type: object
+          properties:
+            id:
+              type: string
+            status:
+              type: string
+            cancel_at:
+              type: string
+              format: date-time
+              nullable: true
+          required:
+          - id
+          - status
+          - cancel_at
+          nullable: true
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminInspectedInvoice'
+        has_more:
+          type: boolean
+        next_cursor:
+          type: string
+      required:
+      - bound
+      - livemode
+      - subscription
+      - invoices
+      - has_more
+      - next_cursor
+    AdminError:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+          required:
+          - code
+          - message
+      required:
+      - error
