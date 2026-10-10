@@ -6,6 +6,138 @@ info:
 servers:
   - url: https://spamapi.de
 paths:
+  /admin/api/users/{id}/entitlements:
+    get:
+      summary: Inspect API credit and complimentary history
+      tags:
+      - Admin
+      security:
+      - SessionAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: credits_offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 1000000
+      - name: overrides_offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 1000000
+      responses:
+        '200':
+          description: Bounded target-scoped histories.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminEntitlementHistory'
+        '400':
+          description: Invalid action, reason, interval, limit or pagination.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Authentication required.
+        '403':
+          description: Current admin authority or session has been lost.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: User or referenced grant not found for this target.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Local persistence unavailable. Retry an ambiguous command with the identical command ID and
+            payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+    post:
+      summary: Apply an atomic local entitlement command
+      tags:
+      - Admin
+      security:
+      - SessionAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      description: Requires current account version and a unique command UUID. Identical retries return the original
+        receipt after current authorization; reuse with changed actor, target or payload conflicts. Credits expire
+        at UTC month end. Reversals cannot exceed the original unreversed grant or invalidate used or reserved capacity.
+        Complimentary grants require start and expiry, disallow overlap or an ongoing paid subscription, and preserve
+        prior usage/reservations on expiry or revoke. Ledger/override, deduplication receipt, account version and
+        audit commit together. No Stripe writes, refunds or billing credits.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminEntitlementRequest'
+      responses:
+        '200':
+          description: Applied or safely replayed command.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminEntitlementResult'
+        '409':
+          description: version_conflict, command_conflict, credit_bounds, quota_month_changed, complimentary_overlap or subscription_conflict.
+            Reload detail before creating a changed command.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '400':
+          description: Invalid action, reason, interval, limit or pagination.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Authentication required.
+        '403':
+          description: Current admin authority or session has been lost.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: User or referenced grant not found for this target.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Local persistence unavailable. Retry an ambiguous command with the identical command ID and
+            payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
   /admin/api/users/{id}/actions:
     post:
       summary: Apply local account action
@@ -1486,33 +1618,65 @@ components:
       - effective_limit
     Entitlement:
       type: object
-      description: Shared local service entitlement; API credits and complimentary overrides remain deferred to issue 97.
+      additionalProperties: false
       properties:
         eligible:
           type: boolean
         account_state:
           type: string
-          enum: [active, suspended, closed]
+          enum:
+          - active
+          - suspended
+          - closed
         projection_updated_at:
           type: string
           format: date-time
           nullable: true
-          description: Local subscription projection timestamp; null means missing-row Free fallback. This is not live Stripe verification.
+        subscription_plan:
+          type: string
+        subscription_limit:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        ongoing_subscription:
+          type: boolean
+        complimentary:
+          $ref: '#/components/schemas/ComplimentaryEntitlement'
+        source:
+          type: string
+          enum:
+          - subscription
+          - complimentary
+        base_limit:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        api_credits:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
         plan:
           type: string
         status:
           type: string
         limit:
           type: integer
-          description: Effective allowance; zero retains the public unlimited sentinel.
+          minimum: 0
+          maximum: 2147483647
         unlimited:
           type: boolean
         used:
           type: integer
+          minimum: 0
+          maximum: 2147483647
         reserved:
           type: integer
+          minimum: 0
+          maximum: 2147483647
         remaining:
           type: integer
+          minimum: 0
+          maximum: 2147483647
         month:
           type: string
           format: date-time
@@ -1521,7 +1685,31 @@ components:
           format: date-time
         revision:
           type: string
-      required: [eligible, account_state, projection_updated_at, plan, status, limit, unlimited, used, reserved, remaining, month, resets_at, revision]
+      required:
+      - eligible
+      - account_state
+      - projection_updated_at
+      - subscription_plan
+      - subscription_limit
+      - ongoing_subscription
+      - complimentary
+      - source
+      - base_limit
+      - api_credits
+      - plan
+      - status
+      - limit
+      - unlimited
+      - used
+      - reserved
+      - remaining
+      - month
+      - resets_at
+      - revision
+      description: 'Shared service entitlement: eligible subscription or Free fallback, then temporary complimentary
+        entitlement, then current UTC-month net API credits on finite allowance. Zero retains the unlimited sentinel.
+        Finite allowance is capped at 2147483647. Subscription fields describe billing independently of complimentary
+        entitlement and credits.'
     AdminAuditEvent:
       type: object
       properties:
@@ -1845,3 +2033,394 @@ components:
       required:
       - proof
       - expires_at
+    ComplimentaryEntitlement:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        command_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        actor_id:
+          type: string
+        plan:
+          type: string
+          enum:
+          - free
+          - pro
+          - business
+          - enterprise
+          - custom
+        limit:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        version:
+          type: integer
+          minimum: 1
+        starts_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        reason:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        ended_at:
+          type: string
+          format: date-time
+          nullable: true
+        ended_by:
+          type: string
+        end_reason:
+          type: string
+        end_kind:
+          type: string
+      required:
+      - id
+      - command_id
+      - user_id
+      - actor_id
+      - plan
+      - limit
+      - version
+      - starts_at
+      - expires_at
+      - reason
+      - created_at
+      - ended_at
+      - ended_by
+      - end_reason
+      - end_kind
+      nullable: true
+    QuotaAdjustment:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        command_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        actor_id:
+          type: string
+        month:
+          type: string
+          format: date-time
+        amount:
+          type: integer
+          minimum: -2147483647
+          maximum: 2147483647
+          description: 'Nonzero signed append-only entry: positive grant or negative reversal.'
+        reversal_of:
+          type: string
+          format: uuid
+          nullable: true
+        reversed:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        reason:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - command_id
+      - user_id
+      - actor_id
+      - month
+      - amount
+      - reversal_of
+      - reversed
+      - reason
+      - created_at
+    AdminEntitlementHistory:
+      type: object
+      additionalProperties: false
+      properties:
+        credits:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuotaAdjustment'
+          maxItems: 100
+        credits_has_more:
+          type: boolean
+        overrides:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComplimentaryEntitlement'
+          maxItems: 100
+        overrides_has_more:
+          type: boolean
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        credits_offset:
+          type: integer
+          minimum: 0
+        overrides_offset:
+          type: integer
+          minimum: 0
+      required:
+      - credits
+      - credits_has_more
+      - overrides
+      - overrides_has_more
+      - limit
+      - credits_offset
+      - overrides_offset
+    AdminEntitlementRequest:
+      oneOf:
+      - $ref: '#/components/schemas/AdminCreditGrant'
+      - $ref: '#/components/schemas/AdminCreditReverse'
+      - $ref: '#/components/schemas/AdminComplimentaryGrant'
+      - $ref: '#/components/schemas/AdminComplimentaryRevoke'
+      discriminator:
+        propertyName: action
+        mapping:
+          credit_grant: '#/components/schemas/AdminCreditGrant'
+          credit_reverse: '#/components/schemas/AdminCreditReverse'
+          complimentary_grant: '#/components/schemas/AdminComplimentaryGrant'
+          complimentary_revoke: '#/components/schemas/AdminComplimentaryRevoke'
+    AdminCreditGrant:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        month:
+          type: string
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          description: Reviewed UTC month (YYYY-MM). Must equal the database current month for a new command; never
+            rolls over.
+        amount:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        action:
+          type: string
+          enum:
+          - credit_grant
+      required:
+      - command_id
+      - expected_version
+      - reason
+      - month
+      - amount
+      - action
+    AdminCreditReverse:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        month:
+          type: string
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          description: Reviewed UTC month (YYYY-MM). Must equal the database current month for a new command; never
+            rolls over.
+        amount:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        action:
+          type: string
+          enum:
+          - credit_reverse
+        grant_id:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - expected_version
+      - reason
+      - month
+      - amount
+      - action
+      - grant_id
+    AdminComplimentaryGrant:
+      oneOf:
+      - $ref: '#/components/schemas/AdminComplimentaryPlanGrant'
+      - $ref: '#/components/schemas/AdminComplimentaryCustomGrant'
+    AdminComplimentaryPlanGrant:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        starts_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+          description: Required exclusive expiry after start. A past start is clamped to database now; expiry must remain
+            in the future.
+        unlimited:
+          type: boolean
+          description: Must explicitly be true for Enterprise or a custom zero/unlimited limit; false or omitted for
+            finite plans.
+        action:
+          type: string
+          enum:
+          - complimentary_grant
+        plan:
+          type: string
+          enum:
+          - free
+          - pro
+          - business
+          - enterprise
+      required:
+      - command_id
+      - expected_version
+      - reason
+      - action
+      - plan
+      - starts_at
+      - expires_at
+    AdminComplimentaryCustomGrant:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        starts_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+          description: Required exclusive expiry after start. A past start is clamped to database now; expiry must remain
+            in the future.
+        unlimited:
+          type: boolean
+          description: Must explicitly be true for Enterprise or a custom zero/unlimited limit; false or omitted for
+            finite plans.
+        action:
+          type: string
+          enum:
+          - complimentary_grant
+        plan:
+          type: string
+          enum:
+          - custom
+        limit:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+      required:
+      - command_id
+      - expected_version
+      - reason
+      - action
+      - plan
+      - limit
+      - starts_at
+      - expires_at
+    AdminComplimentaryRevoke:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        action:
+          type: string
+          enum:
+          - complimentary_revoke
+        override_id:
+          type: string
+          format: uuid
+        override_version:
+          type: integer
+          minimum: 1
+      required:
+      - command_id
+      - expected_version
+      - reason
+      - action
+      - override_id
+      - override_version
+    AdminEntitlementResult:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum:
+          - applied
+        replayed:
+          type: boolean
+        command_id:
+          type: string
+          format: uuid
+        result_id:
+          type: string
+          format: uuid
+        applied_version:
+          type: integer
+          minimum: 1
+        user:
+          $ref: '#/components/schemas/AdminUser'
+      required:
+      - status
+      - replayed
+      - command_id
+      - result_id
+      - applied_version
+      - user
