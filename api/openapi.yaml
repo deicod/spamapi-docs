@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: REST API for spam detection and dashboard management.
 servers:
-  - url: https://spamapi.de
+- url: https://spamapi.de
 paths:
   /admin/api/users/{id}/entitlements:
     get:
@@ -823,6 +823,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BillingCheckoutResponse"
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Stable Checkout command ID. Reuse for identical retries; unresolved commands block conflicting
+          Checkout.
   /dashboard/api/billing/portal:
     post:
       summary: Create portal session
@@ -969,6 +978,383 @@ paths:
       responses:
         "200":
           description: Accepted
+  /admin/api/users/{id}/billing/preview:
+    post:
+      summary: Preview a scoped subscription effect without mutation
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBillingPreview'
+        '400':
+          description: Invalid action-specific request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Original session invalid or lost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '403':
+          description: admin_permission_lost, reauth_required, or invalid_password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: Unknown user, preview, or operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: Stale preview/version, ownership conflict, unsupported configuration, or unresolved billing
+            command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Local transaction/read failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '502':
+          description: Stripe read unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '503':
+          description: Verified billing scope or authority cutover required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminBillingPreviewRequest'
+  /admin/api/users/{id}/billing/reauthenticate:
+    post:
+      summary: Verify the administrator password for this exact billing command
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminReauthResult'
+        '400':
+          description: Invalid action-specific request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Original session invalid or lost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '403':
+          description: admin_permission_lost, reauth_required, or invalid_password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: Unknown user, preview, or operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: Stale preview/version, ownership conflict, unsupported configuration, or unresolved billing
+            command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Local transaction/read failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '502':
+          description: Stripe read unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '503':
+          description: Verified billing scope or authority cutover required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminBillingReauthRequest'
+  /admin/api/users/{id}/billing/operations:
+    post:
+      summary: Persist an audited, idempotent subscription command before Stripe effects
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBillingOperation'
+        '202':
+          description: Durable command accepted. Identical command IDs return the existing operation; conflicting
+            payloads return 409. Poll the operation resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBillingOperation'
+        '400':
+          description: Invalid action-specific request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Original session invalid or lost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '403':
+          description: admin_permission_lost, reauth_required, or invalid_password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: Unknown user, preview, or operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: Stale preview/version, ownership conflict, unsupported configuration, or unresolved billing
+            command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Local transaction/read failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '502':
+          description: Stripe read unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '503':
+          description: Verified billing scope or authority cutover required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminBillingCommand'
+  /admin/api/users/{id}/billing/operations/{operation}:
+    get:
+      summary: Read the safe durable operation status and customer Checkout handoff
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: operation
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBillingOperation'
+        '400':
+          description: Invalid action-specific request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Original session invalid or lost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '403':
+          description: admin_permission_lost, reauth_required, or invalid_password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: Unknown user, preview, or operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: Stale preview/version, ownership conflict, unsupported configuration, or unresolved billing
+            command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Local transaction/read failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '502':
+          description: Stripe read unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '503':
+          description: Verified billing scope or authority cutover required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+  /admin/api/users/{id}/billing/operations/{operation}/reconcile:
+    post:
+      summary: Reconcile a recorded step without issuing a new Stripe mutation
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: operation
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBillingOperation'
+        '400':
+          description: Invalid action-specific request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Original session invalid or lost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '403':
+          description: admin_permission_lost, reauth_required, or invalid_password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: Unknown user, preview, or operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: Stale preview/version, ownership conflict, unsupported configuration, or unresolved billing
+            command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Local transaction/read failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '502':
+          description: Stripe read unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '503':
+          description: Verified billing scope or authority cutover required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
 components:
   securitySchemes:
     ApiKeyHeader:
@@ -1776,6 +2162,20 @@ components:
           type: string
           format: date-time
           nullable: true
+        plan:
+          type: string
+        price_id:
+          type: string
+        period_end:
+          type: integer
+          description: Unix seconds (UTC).
+        pending_until:
+          type: integer
+          description: Unix seconds (UTC).
+        cancel_at_period_end:
+          type: boolean
+        pending_payment:
+          type: boolean
       required:
       - id
       - status
@@ -1827,6 +2227,20 @@ components:
               type: string
               format: date-time
               nullable: true
+            plan:
+              type: string
+            price_id:
+              type: string
+            period_end:
+              type: integer
+              description: Unix seconds (UTC).
+            pending_until:
+              type: integer
+              description: Unix seconds (UTC).
+            cancel_at_period_end:
+              type: boolean
+            pending_payment:
+              type: boolean
           required:
           - id
           - status
@@ -1840,6 +2254,55 @@ components:
           type: boolean
         next_cursor:
           type: string
+        authority:
+          type: string
+          enum:
+          - shadow
+          - bindings
+        management_ready:
+          type: boolean
+        binding_id:
+          type: string
+        revision:
+          type: string
+        operations:
+          type: array
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/AdminBillingOperation'
+        schedule:
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              type: string
+            status:
+              type: string
+            end_behavior:
+              type: string
+            phases:
+              type: array
+              items:
+                type: object
+                properties:
+                  starts_at:
+                    type: integer
+                  ends_at:
+                    type: integer
+                  plan:
+                    type: string
+                  price_id:
+                    type: string
+                required:
+                - starts_at
+                - ends_at
+                - plan
+                - price_id
+          required:
+          - id
+          - status
+          - end_behavior
+          - phases
       required:
       - bound
       - livemode
@@ -1847,6 +2310,7 @@ components:
       - invoices
       - has_more
       - next_cursor
+      - management_ready
     AdminError:
       type: object
       properties:
@@ -2424,3 +2888,729 @@ components:
       - result_id
       - applied_version
       - user
+    AdminBillingPreview:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        plan:
+          type: string
+        revision:
+          type: string
+        after_release_revision:
+          type: string
+        customer_id:
+          type: string
+        subscription_id:
+          type: string
+        schedule_id:
+          type: string
+        item_id:
+          type: string
+        price_id:
+          type: string
+        previous_price_id:
+          type: string
+        currency:
+          type: string
+        effect:
+          type: string
+        action:
+          type: string
+          enum:
+          - checkout
+          - upgrade
+          - downgrade
+          - cancel_period_end
+          - undo_cancel
+          - cancel_now
+          - discard_schedule
+          - reconcile
+        period_start:
+          type: integer
+        period_end:
+          type: integer
+        proration_date:
+          type: integer
+        effective_at:
+          type: integer
+        amount_due:
+          type: integer
+        tax:
+          type: integer
+        proration:
+          type: integer
+        allowance:
+          type: integer
+        expires_at:
+          type: integer
+          description: Exclusive UTC expiry in Unix microseconds. Amounts use currency minor units; period/effective/proration
+            dates use Unix seconds.
+      required:
+      - id
+      - plan
+      - revision
+      - after_release_revision
+      - customer_id
+      - subscription_id
+      - schedule_id
+      - item_id
+      - price_id
+      - previous_price_id
+      - currency
+      - effect
+      - action
+      - period_start
+      - period_end
+      - proration_date
+      - effective_at
+      - amount_due
+      - tax
+      - proration
+      - allowance
+      - expires_at
+    AdminBillingOperation:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        actor_id:
+          type: string
+        binding_id:
+          type: string
+        reason:
+          type: string
+        step:
+          type: string
+        customer_id:
+          type: string
+        subscription_id:
+          type: string
+        schedule_id:
+          type: string
+        checkout_id:
+          type: string
+        error_code:
+          type: string
+        action:
+          type: string
+          enum:
+          - checkout
+          - upgrade
+          - downgrade
+          - cancel_period_end
+          - undo_cancel
+          - cancel_now
+          - discard_schedule
+          - reconcile
+        state:
+          type: string
+          enum:
+          - queued
+          - executing
+          - needs_reconciliation
+          - pending
+          - succeeded
+          - failed
+          - paused
+          - manual_review
+        customer_initiated:
+          type: boolean
+        version:
+          type: integer
+        attempts:
+          type: integer
+          description: Attempts since the write boundary, last confirmed pending observation or step transition.
+        created_at:
+          type: integer
+        updated_at:
+          type: integer
+        step_started_at:
+          type: integer
+        pending_until:
+          type: integer
+        next_run_at:
+          type: integer
+        checkout_url:
+          type: string
+          format: uri
+          description: Ephemeral customer Checkout URL, retrieved on an authorized operation read; never stored
+            in audit.
+      required:
+      - id
+      - user_id
+      - actor_id
+      - binding_id
+      - reason
+      - step
+      - customer_id
+      - subscription_id
+      - schedule_id
+      - checkout_id
+      - error_code
+      - action
+      - state
+      - customer_initiated
+      - version
+      - attempts
+      - created_at
+      - updated_at
+      - step_started_at
+      - pending_until
+      - next_run_at
+    AdminBillingCheckoutIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - checkout
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+    AdminBillingCheckoutCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - checkout
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+        proof:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+      - proof
+    AdminBillingUpgradeIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - upgrade
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+    AdminBillingUpgradeCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - upgrade
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+        proof:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+      - proof
+    AdminBillingDowngradeIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - downgrade
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+    AdminBillingDowngradeCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - downgrade
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+        proof:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+      - proof
+    AdminBillingCancelPeriodEndIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - cancel_period_end
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+    AdminBillingCancelPeriodEndCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - cancel_period_end
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+        proof:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+      - proof
+    AdminBillingUndoCancelIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - undo_cancel
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+    AdminBillingUndoCancelCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - undo_cancel
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+        proof:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+      - proof
+    AdminBillingCancelNowIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - cancel_now
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+        confirm_immediate:
+          type: boolean
+          enum:
+          - true
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+      - confirm_immediate
+    AdminBillingCancelNowCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - cancel_now
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+        confirm_immediate:
+          type: boolean
+          enum:
+          - true
+        proof:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+      - confirm_immediate
+      - proof
+    AdminBillingDiscardScheduleIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - discard_schedule
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+    AdminBillingDiscardScheduleCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - discard_schedule
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+        proof:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+      - proof
+    AdminBillingReconcileCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - reconcile
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+    AdminBillingCommand:
+      oneOf:
+      - $ref: '#/components/schemas/AdminBillingCheckoutCommand'
+      - $ref: '#/components/schemas/AdminBillingUpgradeCommand'
+      - $ref: '#/components/schemas/AdminBillingDowngradeCommand'
+      - $ref: '#/components/schemas/AdminBillingCancelPeriodEndCommand'
+      - $ref: '#/components/schemas/AdminBillingUndoCancelCommand'
+      - $ref: '#/components/schemas/AdminBillingCancelNowCommand'
+      - $ref: '#/components/schemas/AdminBillingDiscardScheduleCommand'
+      - $ref: '#/components/schemas/AdminBillingReconcileCommand'
+    AdminBillingPreviewRequest:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            type: string
+            enum:
+            - checkout
+          plan:
+            type: string
+            enum:
+            - pro
+            - business
+        required:
+        - action
+        - plan
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            type: string
+            enum:
+            - upgrade
+          plan:
+            type: string
+            enum:
+            - pro
+            - business
+        required:
+        - action
+        - plan
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            type: string
+            enum:
+            - downgrade
+          plan:
+            type: string
+            enum:
+            - pro
+            - business
+        required:
+        - action
+        - plan
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            type: string
+            enum:
+            - cancel_period_end
+        required:
+        - action
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            type: string
+            enum:
+            - undo_cancel
+        required:
+        - action
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            type: string
+            enum:
+            - cancel_now
+        required:
+        - action
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            type: string
+            enum:
+            - discard_schedule
+        required:
+        - action
+    AdminBillingReauthRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        password:
+          type: string
+          minLength: 1
+          maxLength: 1024
+        intent:
+          oneOf:
+          - $ref: '#/components/schemas/AdminBillingCheckoutIntent'
+          - $ref: '#/components/schemas/AdminBillingUpgradeIntent'
+          - $ref: '#/components/schemas/AdminBillingDowngradeIntent'
+          - $ref: '#/components/schemas/AdminBillingCancelPeriodEndIntent'
+          - $ref: '#/components/schemas/AdminBillingUndoCancelIntent'
+          - $ref: '#/components/schemas/AdminBillingCancelNowIntent'
+          - $ref: '#/components/schemas/AdminBillingDiscardScheduleIntent'
+      required:
+      - password
+      - intent
