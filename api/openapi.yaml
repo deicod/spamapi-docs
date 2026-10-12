@@ -2392,6 +2392,7 @@ components:
           enum:
           - subscription
           - complimentary
+          - admin
         base_limit:
           type: integer
           minimum: 0
@@ -2452,7 +2453,8 @@ components:
       - resets_at
       - revision
       description: 'Shared service entitlement: eligible subscription or Free fallback, then temporary complimentary
-        entitlement, then current UTC-month net API credits on finite allowance. Zero retains the unlimited sentinel.
+        entitlement, then current UTC-month net API credits on finite allowance. Admin accounts have unlimited
+        allowance regardless of subscription or grants. Zero retains the unlimited sentinel.
         Finite allowance is capped at 2147483647. Subscription fields describe billing independently of complimentary
         entitlement and credits.'
     AdminAuditEvent:
