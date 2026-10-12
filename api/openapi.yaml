@@ -978,9 +978,95 @@ paths:
       responses:
         "200":
           description: Accepted
+  /admin/api/users/{id}/billing/credits:
+    get:
+      summary: Read current monetary invoice balance and paginated immutable Stripe credit history
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: customer
+        required: false
+        description: Optional retained customer binding; defaults to the current binding.
+        schema:
+          type: string
+          pattern: ^cus_
+          maxLength: 255
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          pattern: ^cbtxn_
+          maxLength: 255
+      responses:
+        '200':
+          description: Authorized result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBillingCreditHistory'
+        '400':
+          description: Invalid action-specific request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Original session invalid or lost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '403':
+          description: admin_permission_lost, reauth_required, or invalid_password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: Unknown user, preview, or operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: Stale preview/version, ownership conflict, unsupported configuration, or unresolved billing
+            command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Local transaction/read failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '502':
+          description: Stripe read unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '503':
+          description: Verified billing scope or authority cutover required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+      description: Reads only a verified current or retained historical customer binding for this target. Negative
+        amounts are credits; entries also show Stripe application/adjustment history. No reversal command is
+        exposed.
   /admin/api/users/{id}/billing/preview:
     post:
-      summary: Preview a scoped subscription effect without mutation
+      summary: Preview a scoped subscription or financial effect without mutation
       security:
       - SessionAuth: []
       parameters:
@@ -2927,6 +3013,8 @@ components:
           - cancel_now
           - discard_schedule
           - reconcile
+          - refund
+          - billing_credit
         period_start:
           type: integer
         period_end:
@@ -2947,6 +3035,14 @@ components:
           type: integer
           description: Exclusive UTC expiry in Unix microseconds. Amounts use currency minor units; period/effective/proration
             dates use Unix seconds.
+        financial:
+          $ref: '#/components/schemas/AdminFinancialPreview'
+        financial_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminFinancialResult'
+        refund_writes_stopped:
+          type: boolean
       required:
       - id
       - plan
@@ -3007,6 +3103,8 @@ components:
           - cancel_now
           - discard_schedule
           - reconcile
+          - refund
+          - billing_credit
         state:
           type: string
           enum:
@@ -3040,6 +3138,12 @@ components:
           format: uri
           description: Ephemeral customer Checkout URL, retrieved on an authorized operation read; never stored
             in audit.
+        financial:
+          $ref: '#/components/schemas/AdminFinancialPreview'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminFinancialResult'
       required:
       - id
       - user_id
@@ -3511,6 +3615,8 @@ components:
       - $ref: '#/components/schemas/AdminBillingCancelNowCommand'
       - $ref: '#/components/schemas/AdminBillingDiscardScheduleCommand'
       - $ref: '#/components/schemas/AdminBillingReconcileCommand'
+      - $ref: '#/components/schemas/AdminBillingRefundCommand'
+      - $ref: '#/components/schemas/AdminBillingCreditCommand'
     AdminBillingPreviewRequest:
       oneOf:
       - type: object
@@ -3594,6 +3700,69 @@ components:
             - discard_schedule
         required:
         - action
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            type: string
+            enum:
+            - refund
+          invoice_id:
+            type: string
+            pattern: ^in_
+            maxLength: 255
+          refund_mode:
+            type: string
+            enum:
+            - full
+        required:
+        - action
+        - invoice_id
+        - refund_mode
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            type: string
+            enum:
+            - refund
+          invoice_id:
+            type: string
+            pattern: ^in_
+            maxLength: 255
+          refund_mode:
+            type: string
+            enum:
+            - partial
+          amount:
+            type: integer
+            minimum: 1
+            maximum: 99999999
+        required:
+        - action
+        - invoice_id
+        - refund_mode
+        - amount
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            type: string
+            enum:
+            - billing_credit
+          amount:
+            type: integer
+            minimum: 1
+            maximum: 99999999
+          currency:
+            type: string
+            pattern: ^[a-z]{3}$
+            minLength: 3
+            maxLength: 3
+        required:
+        - action
+        - amount
+        - currency
     AdminBillingReauthRequest:
       type: object
       additionalProperties: false
@@ -3611,6 +3780,293 @@ components:
           - $ref: '#/components/schemas/AdminBillingUndoCancelIntent'
           - $ref: '#/components/schemas/AdminBillingCancelNowIntent'
           - $ref: '#/components/schemas/AdminBillingDiscardScheduleIntent'
+          - $ref: '#/components/schemas/AdminBillingRefundIntent'
+          - $ref: '#/components/schemas/AdminBillingCreditIntent'
       required:
       - password
       - intent
+    AdminFinancialResult:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        kind:
+          type: string
+        charge_id:
+          type: string
+        payment_intent_id:
+          type: string
+        amount:
+          type: integer
+        currency:
+          type: string
+        status:
+          type: string
+        failure_reason:
+          type: string
+        created_at:
+          type: integer
+          description: Observed Stripe receipt timestamp in Unix seconds. Refund status can change after success.
+      required:
+      - id
+      - kind
+      - charge_id
+      - payment_intent_id
+      - amount
+      - currency
+      - status
+      - failure_reason
+      - created_at
+    AdminRefundPayment:
+      type: object
+      additionalProperties: false
+      properties:
+        charge_id:
+          type: string
+        payment_intent_id:
+          type: string
+        invoice_payment_ids:
+          type: array
+          items:
+            type: string
+        paid:
+          type: integer
+        captured:
+          type: integer
+        refundable:
+          type: integer
+        amount:
+          type: integer
+        revision:
+          type: string
+        refunds:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminFinancialResult'
+      required:
+      - charge_id
+      - payment_intent_id
+      - invoice_payment_ids
+      - paid
+      - captured
+      - refundable
+      - amount
+      - revision
+      - refunds
+    AdminFinancialPreview:
+      type: object
+      additionalProperties: false
+      properties:
+        invoice_id:
+          type: string
+        invoice_revision:
+          type: string
+        refund_mode:
+          type: string
+        currency:
+          type: string
+        amount:
+          type: integer
+        refundable:
+          type: integer
+        tax:
+          type: integer
+        balance_before:
+          type: integer
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminRefundPayment'
+      required:
+      - invoice_id
+      - invoice_revision
+      - refund_mode
+      - currency
+      - amount
+      - refundable
+      - tax
+      - balance_before
+      - payments
+      description: Reviewed integer currency minor units. Refunds return gross captured money without modifying
+        invoice tax or subscription access; credits adjust future invoice balance.
+    AdminBillingCreditEntry:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        amount:
+          type: integer
+        currency:
+          type: string
+        ending_balance:
+          type: integer
+        type:
+          type: string
+        reason:
+          type: string
+        invoice_id:
+          type: string
+        operation_id:
+          type: string
+        created_at:
+          type: integer
+      required:
+      - id
+      - amount
+      - currency
+      - ending_balance
+      - type
+      - reason
+      - invoice_id
+      - operation_id
+      - created_at
+    AdminBillingCreditHistory:
+      type: object
+      additionalProperties: false
+      properties:
+        customer_id:
+          type: string
+        currency:
+          type: string
+        balance:
+          type: integer
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminBillingCreditEntry'
+        has_more:
+          type: boolean
+        next_cursor:
+          type: string
+        reversal_supported:
+          type: boolean
+          description: 'Always false: an opposite adjustment can race consumption and create debt.'
+        reversal_reason:
+          type: string
+      required:
+      - customer_id
+      - currency
+      - balance
+      - entries
+      - has_more
+      - next_cursor
+      - reversal_supported
+      - reversal_reason
+    AdminBillingRefundIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - refund
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+    AdminBillingRefundCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - refund
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+        preview_id:
+          type: string
+          format: uuid
+        proof:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+      - proof
+    AdminBillingCreditIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - billing_credit
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 350
+        preview_id:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+    AdminBillingCreditCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+          - billing_credit
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 350
+        preview_id:
+          type: string
+          format: uuid
+        proof:
+          type: string
+          format: uuid
+      required:
+      - command_id
+      - action
+      - expected_version
+      - reason
+      - preview_id
+      - proof
