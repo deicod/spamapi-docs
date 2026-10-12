@@ -352,6 +352,279 @@ paths:
           description: Unknown user
         '500':
           description: Local read failure
+    delete:
+      summary: Request separate staged permanent deletion of a closed account
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminDeletionCommand'
+      responses:
+        '200':
+          description: Durable lifecycle result; available after identity erasure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDeletion'
+        '202':
+          description: Durable lifecycle result; available after identity erasure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDeletion'
+        '400':
+          description: Malformed intent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Invalid session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '403':
+          description: Administrative access lost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: Unknown account or closure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: Version, policy or intent conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Persistence failure; retry the same command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '503':
+          description: Lifecycle service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+  /admin/api/users/{id}/deletion:
+    get:
+      summary: Inspect retention, cooling-off, eligibility and durable erasure progress
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Durable lifecycle result; available after identity erasure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDeletionPreview'
+        '400':
+          description: Malformed intent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Invalid session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '403':
+          description: Administrative access lost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: Unknown account or closure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: Version, policy or intent conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Persistence failure; retry the same command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '503':
+          description: Lifecycle service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+  /admin/api/users/{id}/deletion/reauthenticate:
+    post:
+      summary: Reauthenticate for the exact generation, deletion intent and retention policy
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminDeletionReauthRequest'
+      responses:
+        '200':
+          description: Durable lifecycle result; available after identity erasure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminReauthResult'
+        '400':
+          description: Malformed intent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Invalid session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '403':
+          description: Administrative access lost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: Unknown account or closure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: Version, policy or intent conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Persistence failure; retry the same command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '503':
+          description: Lifecycle service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+  /admin/api/users/{id}/deletion/review:
+    post:
+      summary: Renew deletion consent before erasure with an operation-version CAS
+      security:
+      - SessionAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminDeletionReviewCommand'
+      responses:
+        '200':
+          description: Durable lifecycle result; available after identity erasure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDeletion'
+        '202':
+          description: Renewed durable deletion intent awaiting eligibility
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDeletion'
+        '400':
+          description: Malformed intent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '401':
+          description: Invalid session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '403':
+          description: Administrative access lost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '404':
+          description: Unknown account or closure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '409':
+          description: Version, policy or intent conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '500':
+          description: Persistence failure; retry the same command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
+        '503':
+          description: Lifecycle service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminError'
   /admin/api/users/{id}/sites:
     get:
       summary: Inspect observed sites
@@ -2418,6 +2691,7 @@ components:
       - $ref: '#/components/schemas/AdminSimpleAction'
       - $ref: '#/components/schemas/AdminRevokeKeyAction'
       - $ref: '#/components/schemas/AdminRoleAction'
+      - $ref: '#/components/schemas/AdminCloseAction'
       discriminator:
         propertyName: action
         mapping:
@@ -2428,6 +2702,7 @@ components:
           password_reset: '#/components/schemas/AdminSimpleAction'
           revoke_key: '#/components/schemas/AdminRevokeKeyAction'
           role: '#/components/schemas/AdminRoleAction'
+          close: '#/components/schemas/AdminCloseAction'
     AdminActionVersion:
       type: integer
       minimum: 1
@@ -2544,6 +2819,34 @@ components:
       - expected_version
       - reason
       - role
+    AdminCloseIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum: [close]
+        expected_version:
+          $ref: '#/components/schemas/AdminActionVersion'
+        reason:
+          $ref: '#/components/schemas/AdminActionReason'
+      required: [action, expected_version, reason]
+    AdminCloseAction:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum: [close]
+        expected_version:
+          $ref: '#/components/schemas/AdminActionVersion'
+        reason:
+          $ref: '#/components/schemas/AdminActionReason'
+        proof:
+          type: string
+          format: uuid
+          writeOnly: true
+      required: [action, expected_version, reason, proof]
     AdminActionResult:
       type: object
       properties:
@@ -2567,7 +2870,14 @@ components:
           minLength: 1
           maxLength: 1024
         intent:
-          $ref: '#/components/schemas/AdminRoleIntent'
+          oneOf:
+          - $ref: '#/components/schemas/AdminRoleIntent'
+          - $ref: '#/components/schemas/AdminCloseIntent'
+          discriminator:
+            propertyName: action
+            mapping:
+              role: '#/components/schemas/AdminRoleIntent'
+              close: '#/components/schemas/AdminCloseIntent'
       required:
       - password
       - intent
@@ -4070,3 +4380,173 @@ components:
       - reason
       - preview_id
       - proof
+    AdminDeletionIntent:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        expected_version:
+          $ref: '#/components/schemas/AdminActionVersion'
+        generation:
+          type: string
+          format: uuid
+        reason:
+          $ref: '#/components/schemas/AdminActionReason'
+        review_version:
+          type: integer
+          minimum: 1
+          description: Existing operation version when explicitly renewing consent
+      required: [command_id, expected_version, generation, reason]
+    AdminDeletionCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        expected_version:
+          $ref: '#/components/schemas/AdminActionVersion'
+        generation:
+          type: string
+          format: uuid
+        reason:
+          $ref: '#/components/schemas/AdminActionReason'
+        proof:
+          type: string
+          format: uuid
+          writeOnly: true
+      required: [command_id, expected_version, generation, reason, proof]
+    AdminDeletionReviewCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        command_id:
+          type: string
+          format: uuid
+        expected_version:
+          $ref: '#/components/schemas/AdminActionVersion'
+        generation:
+          type: string
+          format: uuid
+        reason:
+          $ref: '#/components/schemas/AdminActionReason'
+        proof:
+          type: string
+          format: uuid
+          writeOnly: true
+        review_version:
+          type: integer
+          minimum: 1
+      required: [command_id, expected_version, generation, reason, proof, review_version]
+    AdminDeletionReauthRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+        intent:
+          $ref: '#/components/schemas/AdminDeletionIntent'
+      required: [password, intent]
+    AdminRetentionPolicy:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        financial_days:
+          type: integer
+          minimum: 0
+        audit_days:
+          type: integer
+          minimum: 0
+        backup_days:
+          type: integer
+          minimum: 0
+        log_days:
+          type: integer
+          minimum: 0
+      required: [id, financial_days, audit_days, backup_days, log_days]
+    AdminClosure:
+      type: object
+      additionalProperties: false
+      nullable: true
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        generation:
+          type: string
+          format: uuid
+        closed_at:
+          type: integer
+          description: UTC Unix microseconds
+        eligible_at:
+          type: integer
+          description: Earliest erasure, 30 days after closure; UTC Unix microseconds
+      required: [user_id, generation, closed_at, eligible_at]
+    AdminDeletion:
+      type: object
+      nullable: true
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        generation:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum: [waiting, blocked, erasing, completed]
+        stage:
+          type: string
+        version:
+          type: integer
+          minimum: 1
+        attempts:
+          type: integer
+          minimum: 0
+        error_code:
+          type: string
+        next_run_at:
+          type: integer
+        created_at:
+          type: integer
+        started_at:
+          type: integer
+        completed_at:
+          type: integer
+        policy:
+          $ref: '#/components/schemas/AdminRetentionPolicy'
+      required: [id, user_id, generation, state, stage, version, attempts, error_code, next_run_at, created_at, started_at, completed_at, policy]
+    AdminDeletionPreview:
+      type: object
+      additionalProperties: false
+      properties:
+        policy_configured:
+          type: boolean
+        policy:
+          $ref: '#/components/schemas/AdminRetentionPolicy'
+        closure:
+          $ref: '#/components/schemas/AdminClosure'
+        operation:
+          $ref: '#/components/schemas/AdminDeletion'
+        eligible:
+          type: boolean
+        blockers:
+          type: array
+          items:
+            type: string
+        inventory:
+          type: object
+          additionalProperties: true
+          description: Counts of each explicitly erased data family; no personal records
+      required: [policy_configured, policy, closure, operation, eligible, blockers, inventory]
