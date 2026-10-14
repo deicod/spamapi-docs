@@ -145,6 +145,10 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-bs-level="2"><a href="#shared-model-contributions" class="nav-link">Shared model contributions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -175,7 +179,54 @@ no Composer installation is required.</p>
 <ul>
 <li>Choose which forms are protected (Comments, CF7, Gravity Forms, WPForms).</li>
 <li>Enable logging if you need diagnostics.</li>
-</ul></div>
+</ul>
+<h2 id="shared-model-contributions">Shared model contributions<a class="headerlink" href="#shared-model-contributions" title="Permanent link">&para;</a></h2>
+<p>Shared-model participation is optional and disabled by default, for both free
+and paid accounts. Ordinary checks and legacy feedback do not opt you in. Test
+the connection in Settings → SpamAPI to retrieve the operator's published
+contribution notice, policy version and configured retention period. Read it,
+confirm your authority, visitor notices and any required agreements, then enable
+the separate <strong>Shared spam model</strong> setting. This setting alone does not establish
+every permission needed for visitor data. Server training availability defaults
+to on once the operator has configured the notice, retention and ledger; each
+installation still chooses its own participation.</p>
+<p>Configured sites with contributions off register a disabled installation in the
+background, including after a successful connection test. Once acknowledged,
+comment checks can use the shared model's canary scope without contributing
+labels. Registration leaves <strong>Shared spam model</strong> off and uploads no history.</p>
+<p>Explicit moderator spam, not-spam and reviewed approval actions can submit
+minimized comment text, language, opaque installation/item IDs, label and content
+revisions, timestamps and an authorized prediction reference. Separate author
+names, email addresses, IPs and request headers are omitted. Text and hashes can
+still contain personal data. These examples go to dedicated storage for SpamAPI's
+shared statistical comment model; they do not fine-tune a hosted AI provider.</p>
+<p>Moderation queues contributions locally and makes no network call. The queue is
+bounded to 1,000 records and a seven-day event age; retries use backoff and server
+retry delays. Budget waits do not exhaust transient-failure retries. Scheduled
+workers wake at the actual queued due time; expired content is removed even when
+an event is parked. Discarded events permit a fresh explicit moderation review.
+Permanent contribution rejections discard their rejected batch; transient
+outages, timeouts and budget waits keep the original events for retry.
+Settings show pending work and failure codes. On low-traffic sites,
+run <code>wp cron event run --due-now</code> from a real scheduler every minute. WP-CLI also
+provides <code>wp spamapi training status</code>, <code>drain</code> and <code>retry</code>. Historical backfill
+requires an explicit preview/confirmation; no history uploads on activation.</p>
+<p>Disabling participation atomically replaces pending work with a withdrawal
+control. Storage failures leave a repair marker that workers process before
+sending any superseded enrollment or label. Deletion withdrawals take priority
+and can replace unsent labels when the queue is full; deleted-item watermarks
+remain until an accepted withdrawal or global opt-out so a failed local write can
+be retried.
+Wait for the server status to show disabled before removing credentials
+or uninstalling. Deactivation/uninstall attempt withdrawal and clear local data;
+if offline or credentials are revoked, ask the account owner to confirm remote
+withdrawal. A failed submission is never reported as ingested. Models affected by
+withdrawal are retired or retrained; deleting examples does not automatically
+unlearn their influence. Continue using normal spam checks with contribution off.
+Withdrawals are delivered separately and remain available during collection pauses
+or policy changes. Site URL changes queue an authenticated rebind; checks continue
+while that update is pending. Old-site sources are withdrawn and contributor trust
+returns to quarantine after the move.</p></div>
             </div>
         </div>
 
