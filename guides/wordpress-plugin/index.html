@@ -185,9 +185,17 @@ includes the PHP files, admin assets, and translations needed to run the plugin;
 no Composer installation is required.</p>
 <h2 id="configure">Configure<a class="headerlink" href="#configure" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Choose which forms are protected (Comments, CF7, Gravity Forms, WPForms).</li>
-<li>Enable logging if you need diagnostics.</li>
+<li><strong>Enable SpamAPI</strong> turns protection on. The plugin then checks WordPress
+  comments and the submissions of every supported form plugin that is active:
+  Contact Form 7, Gravity Forms and WPForms. Pingbacks and trackbacks are not
+  checked.</li>
+<li><strong>Strictness Level</strong> applies to all checks: Lenient blocks only obvious spam,
+  Balanced (the default) blocks likely spam, and Strict blocks anything
+  suspicious.</li>
 </ul>
+<p>If SpamAPI can't be reached or returns an error, the comment or form
+submission goes through unchecked and the plugin writes the error to the PHP
+error log.</p>
 <h2 id="shared-model-contributions">Shared model contributions<a class="headerlink" href="#shared-model-contributions" title="Permanent link">&para;</a></h2>
 <p>Shared-model participation is optional and disabled by default, for both free
 and paid accounts. Ordinary checks and legacy feedback do not opt you in. Test
