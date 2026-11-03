@@ -866,6 +866,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/pricing:
+    get:
+      summary: Public plans and prices
+      description: |
+        No authentication. Lists the plans with their monthly check quotas and, for Pro and Business, the configured Stripe prices that Checkout charges. Prices are read from Stripe and reused for up to five minutes; responses may be cached for 60 seconds.
+        If either configured price cannot be read or is not a fixed recurring amount, the response is 503 pricing_unavailable. No partial, default or outdated prices are returned.
+      responses:
+        "200":
+          description: Current plans and prices
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicPricing"
+        "503":
+          description: Pricing is unavailable; pricing_unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /api/v1/check:
     post:
       summary: Check content for spam
@@ -2017,6 +2036,69 @@ components:
           type: string
           enum: [ok]
       required: [status]
+    PublicPricing:
+      type: object
+      properties:
+        livemode:
+          type: boolean
+          description: False for Stripe sandbox prices, which are never production prices.
+        quota_period:
+          type: string
+          enum: [utc_calendar_month]
+          description: Checks count toward the UTC calendar month in which they were admitted, independent of billing dates.
+        quota_exceeded:
+          type: string
+          enum: [rejected]
+          description: Checks over the quota get HTTP 429 usage_limit_exceeded; there are no overage charges.
+        plans:
+          type: array
+          description: Free, Pro, Business and Enterprise, in that order.
+          items:
+            $ref: "#/components/schemas/PublicPlan"
+      required: [livemode, quota_period, quota_exceeded, plans]
+    PublicPlan:
+      type: object
+      properties:
+        id:
+          type: string
+          enum: [free, pro, business, enterprise]
+        name:
+          type: string
+        monthly_checks:
+          type: integer
+          minimum: 1
+          nullable: true
+          description: Null for Enterprise, which is unlimited under its separate agreement.
+        purchase:
+          type: string
+          enum: [signup, checkout, contact]
+          description: signup is a free account without payment details; checkout is Stripe Checkout from the dashboard; contact is a separate agreement, never self-service.
+        price:
+          $ref: "#/components/schemas/PublicPrice"
+      required: [id, name, monthly_checks, purchase, price]
+    PublicPrice:
+      type: object
+      nullable: true
+      description: The Stripe price Checkout charges; set exactly for checkout plans, null for the others.
+      properties:
+        currency:
+          type: string
+          description: Lowercase ISO 4217 code.
+        unit_amount:
+          type: integer
+          minimum: 1
+          description: Amount per interval in the currency's minor unit, e.g. cents.
+        interval:
+          type: string
+          enum: [day, week, month, year]
+        interval_count:
+          type: integer
+          minimum: 1
+        tax_behavior:
+          type: string
+          enum: [inclusive, exclusive, unspecified]
+          description: Stripe's tax behavior. unspecified states nothing about VAT; Stripe Checkout shows the final amount.
+      required: [currency, unit_amount, interval, interval_count, tax_behavior]
     UsageInfo:
       type: object
       properties:

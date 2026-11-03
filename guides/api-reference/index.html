@@ -214,6 +214,11 @@
 <td>/sites</td>
 <td>Sites using the key</td>
 </tr>
+<tr>
+<td>GET</td>
+<td>/pricing</td>
+<td>Plans and prices (no API key)</td>
+</tr>
 </tbody>
 </table>
 <h2 id="public-api-responses">Public API Responses<a class="headerlink" href="#public-api-responses" title="Permanent link">&para;</a></h2>
@@ -237,6 +242,34 @@ uses the Free quota.</p>
 contains <code>site</code>, <code>api_calls</code>, <code>spam</code>, <code>ham</code>, <code>missed_spam</code>, <code>false_positives</code>,
 <code>first_seen</code>, and <code>last_seen</code>. Pagination defaults to 50 sites and is capped at
 100 per request. The dashboard's sites endpoint uses its own response schema.</p>
+<p><code>GET /api/v1/pricing</code> needs no API key. It lists the Free, Pro, Business and
+Enterprise plans with their monthly check quotas, and for Pro and Business the
+Stripe price that Checkout charges: <code>unit_amount</code> in the currency's minor unit
+(cents), <code>currency</code>, the billing <code>interval</code> and Stripe's <code>tax_behavior</code>
+(<code>inclusive</code>, <code>exclusive</code>, or <code>unspecified</code>, which makes no statement about VAT;
+Checkout shows the final amount). Enterprise has <code>monthly_checks: null</code>
+(unlimited under its agreement) and <code>purchase: "contact"</code>; it is never sold
+through Checkout. <code>quota_period</code> is <code>utc_calendar_month</code>: only metered
+<code>POST /check</code> requests count, toward the UTC month in which they were admitted,
+independent of the subscription's billing dates. <code>quota_exceeded</code> is <code>rejected</code>:
+checks over the quota get HTTP <code>429</code> <code>usage_limit_exceeded</code> and are never billed.</p>
+<pre><code class="language-json">{
+  &quot;livemode&quot;: true,
+  &quot;quota_period&quot;: &quot;utc_calendar_month&quot;,
+  &quot;quota_exceeded&quot;: &quot;rejected&quot;,
+  &quot;plans&quot;: [
+    {&quot;id&quot;: &quot;free&quot;, &quot;name&quot;: &quot;Free&quot;, &quot;monthly_checks&quot;: 100, &quot;purchase&quot;: &quot;signup&quot;, &quot;price&quot;: null},
+    {&quot;id&quot;: &quot;pro&quot;, &quot;name&quot;: &quot;Pro&quot;, &quot;monthly_checks&quot;: 10000, &quot;purchase&quot;: &quot;checkout&quot;,
+     &quot;price&quot;: {&quot;currency&quot;: &quot;eur&quot;, &quot;unit_amount&quot;: 900, &quot;interval&quot;: &quot;month&quot;, &quot;interval_count&quot;: 1, &quot;tax_behavior&quot;: &quot;unspecified&quot;}},
+    {&quot;id&quot;: &quot;business&quot;, &quot;name&quot;: &quot;Business&quot;, &quot;monthly_checks&quot;: 100000, &quot;purchase&quot;: &quot;checkout&quot;,
+     &quot;price&quot;: {&quot;currency&quot;: &quot;eur&quot;, &quot;unit_amount&quot;: 4900, &quot;interval&quot;: &quot;month&quot;, &quot;interval_count&quot;: 1, &quot;tax_behavior&quot;: &quot;unspecified&quot;}},
+    {&quot;id&quot;: &quot;enterprise&quot;, &quot;name&quot;: &quot;Enterprise&quot;, &quot;monthly_checks&quot;: null, &quot;purchase&quot;: &quot;contact&quot;, &quot;price&quot;: null}
+  ]
+}
+</code></pre>
+<p>Prices are read from Stripe and reused for up to five minutes. If either price
+cannot be read or is not a fixed recurring amount, the endpoint returns HTTP
+<code>503</code> <code>pricing_unavailable</code> instead of default or outdated prices.</p>
 <h2 id="dashboard-api-session">Dashboard API (Session)<a class="headerlink" href="#dashboard-api-session" title="Permanent link">&para;</a></h2>
 <p>Base path: <code>/dashboard/api</code></p>
 <table>
