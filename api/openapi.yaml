@@ -1186,11 +1186,17 @@ paths:
               $ref: "#/components/schemas/BillingCheckoutRequest"
       responses:
         "200":
-          description: Checkout URL
+          description: Checkout URL. Prices include VAT; Checkout collects the billing address and an optional business tax ID, and Stripe Tax shows the VAT or reverse charge.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/BillingCheckoutResponse"
+        "503":
+          description: Billing identity cutover required (billing_cutover_required), or Stripe Tax is not ready to split VAT out of the prices (billing_tax_unavailable).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
       parameters:
       - in: header
         name: Idempotency-Key
@@ -1503,7 +1509,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AdminError'
         '503':
-          description: Verified billing scope or authority cutover required
+          description: Verified billing scope or authority cutover required (billing_cutover_required), or Stripe Tax is not ready for Checkout (billing_tax_unavailable)
           content:
             application/json:
               schema:
