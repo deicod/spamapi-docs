@@ -1327,6 +1327,14 @@ paths:
       responses:
         "200":
           description: Accepted
+        "400":
+          description: Missing or invalid signature, malformed payload or incompatible API version
+        "409":
+          description: Another webhook changed the billing record during processing; Stripe retries the event
+        "413":
+          description: Payload larger than 1 MiB
+        "500":
+          description: The verified event could not be processed; Stripe retries the event
   /admin/api/users/{id}/billing/credits:
     get:
       summary: Read current monetary invoice balance and paginated immutable Stripe credit history
