@@ -4,7 +4,10 @@ info:
   version: 1.0.0
   description: REST API for spam detection and dashboard management.
 servers:
-- url: https://spamapi.de
+- url: https://api.spamapi.de
+  description: Public API (/api/v1) and Stripe webhooks
+- url: https://app.spamapi.de
+  description: Dashboard, auth and admin APIs used by the dashboard
 paths:
   /api/v1/training/participation:
     post:
@@ -860,6 +863,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VerifyKeyResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
         "503":
           description: Entitlement lookup failed; quota_unavailable.
           content:
@@ -914,6 +921,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CheckResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/AuthError"
         "403":
@@ -963,6 +972,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FeedbackResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          description: Feedback could not be stored; feedback_error or usage_error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /api/v1/submit-ham:
     post:
       summary: Report false positive (ham)
@@ -981,6 +1002,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FeedbackResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          description: Feedback could not be stored; feedback_error or usage_error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /api/v1/usage:
     get:
       summary: Get usage summary
@@ -993,6 +1026,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UsageResponse"
+        "401":
+          $ref: "#/components/responses/AuthError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
         "403":
           description: Account is unavailable; account_unavailable.
           content:
@@ -1031,6 +1068,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SitesResponse"
+        "401":
+          $ref: "#/components/responses/AuthError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          description: Sites could not be read; sites_error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /dashboard/api/account:
     get:
       summary: Get account details
@@ -1839,8 +1886,14 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
+    BadRequestError:
+      description: Invalid JSON or a missing or invalid field; invalid_json, validation_error, invalid_request or missing_api_key.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
     RateLimitError:
-      description: Rate limit exceeded
+      description: Too many requests in a minute (rate_limit_exceeded, with Retry-After) or, for checks, the monthly quota is used up (usage_limit_exceeded).
       content:
         application/json:
           schema:

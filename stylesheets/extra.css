@@ -1,0 +1,9 @@
+/* On narrow screens, wide tables scroll within the page, so the page itself
+   never scrolls sideways and codes in table cells stay unbroken. */
+@media (max-width: 767.98px) {
+  [role="main"] table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}

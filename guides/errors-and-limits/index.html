@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://deicod.github.io/spamapi-docs/guides/errors-and-limits/">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Errors and limits - SpamAPI Documentation</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" disabled>
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <link href="../../stylesheets/extra.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../..">SpamAPI Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../.." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Get started</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../getting-started/" class="dropdown-item">REST API quickstart</a>
+</li>
+                                    
+<li>
+    <a href="../wordpress-plugin/" class="dropdown-item">WordPress setup</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Reference</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../api-reference/" class="dropdown-item">API reference</a>
+</li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">Errors and limits</a>
+</li>
+                                    
+<li>
+    <a href="../test-mode/" class="dropdown-item">Test mode</a>
+</li>
+                                    
+<li>
+    <a href="../troubleshooting/" class="dropdown-item">Troubleshooting</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../security/" class="nav-link">Security policy</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">SpamAPI</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="https://spamapi.de/" class="dropdown-item">Website</a>
+</li>
+                                    
+<li>
+    <a href="https://app.spamapi.de/dashboard" class="dropdown-item">Dashboard</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../api-reference/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../test-mode/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                              <button id="theme-menu" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme" class="nav-link dropdown-toggle">
+                                <i class="fa-solid fa-circle-half-stroke fa-fw"></i>
+                                <span class="d-lg-none ms-2">Toggle theme</span>
+                              </button>
+                              <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                  <button class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+                                    <i class="fa-solid fa-sun fa-fw"></i>
+                                    <span class="ms-2">Light</span>
+                                    <i class="fa-solid fa-check ms-auto d-none"></i>
+                                  </button>
+                                </li>
+                                <li>
+                                  <button class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+                                    <i class="fa-solid fa-moon fa-fw"></i>
+                                    <span class="ms-2">Dark</span>
+                                    <i class="fa-solid fa-check ms-auto d-none"></i>
+                                  </button>
+                                </li>
+                                <li>
+                                  <button class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="true">
+                                    <i class="fa-solid fa-circle-half-stroke fa-fw"></i>
+                                    <span class="ms-2">Auto</span>
+                                    <i class="fa-solid fa-check ms-auto"></i>
+                                  </button>
+                                </li>
+                              </ul>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <script src="../../js/darkmode.js"></script>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#errors-and-limits" class="nav-link">Errors and limits</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#error-responses" class="nav-link">Error responses</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#error-codes" class="nav-link">Error codes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#rate-limits" class="nav-link">Rate limits</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#monthly-checks" class="nav-link">Monthly checks</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="errors-and-limits">Errors and limits<a class="headerlink" href="#errors-and-limits" title="Permanent link">&para;</a></h1>
+<h2 id="error-responses">Error responses<a class="headerlink" href="#error-responses" title="Permanent link">&para;</a></h2>
+<p>The public API (<code>/api/v1</code>) answers errors with an HTTP status and a JSON body.
+<code>error</code> is a stable code for your program; <code>message</code> explains it for people
+and can change.</p>
+<pre><code class="language-sh">curl https://api.spamapi.de/api/v1/check \
+  -H &quot;X-API-Key: $SPAMAPI_KEY&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;blog&quot;: &quot;https://example.com&quot;}'
+</code></pre>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;validation_error&quot;,
+  &quot;message&quot;: &quot;user IP is required&quot;
+}
+</code></pre>
+<p>Every response has an <code>X-Request-ID</code> header. Include it when you contact
+<a href="../troubleshooting/#contact-support">support</a>. You can send your own
+<code>X-Request-ID</code>, up to 128 printable ASCII characters without spaces, to match
+SpamAPI's logs with yours; it isn't an idempotency key. Check responses also
+carry the ID in <code>request_id</code>.</p>
+<p>An error never contains a spam decision. Don't treat an error as <code>allow</code>.</p>
+<h2 id="error-codes">Error codes<a class="headerlink" href="#error-codes" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th><code>error</code></th>
+<th>Endpoints</th>
+<th>Meaning and what to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td><code>invalid_json</code></td>
+<td><code>POST</code> endpoints</td>
+<td>The body isn't valid JSON. Fix the request.</td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>validation_error</code></td>
+<td>check, submit-spam, submit-ham</td>
+<td>A field is missing or invalid; <code>message</code> names it. <code>blog</code> and <code>user_ip</code> are required, and <code>user_ip</code> must be an IPv4 or IPv6 address. Fix the request.</td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>missing_api_key</code></td>
+<td>verify-key</td>
+<td>The body has no <code>api_key</code>.</td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>invalid_request</code></td>
+<td>check, submit-spam, submit-ham</td>
+<td>The request couldn't be read. Fix the request.</td>
+</tr>
+<tr>
+<td>401</td>
+<td><code>missing_api_key</code></td>
+<td>Endpoints with an API key</td>
+<td>The <code>X-API-Key</code> header is missing.</td>
+</tr>
+<tr>
+<td>401</td>
+<td><code>invalid_api_key</code></td>
+<td>Endpoints with an API key</td>
+<td>The key is unknown, revoked or malformed, or an <code>api_key</code> in the body differs from the header. Check the key in the <a href="https://app.spamapi.de/dashboard/keys">dashboard</a>.</td>
+</tr>
+<tr>
+<td>403</td>
+<td><code>account_unavailable</code></td>
+<td>check, usage</td>
+<td>The account can't use the API. Contact support.</td>
+</tr>
+<tr>
+<td>403</td>
+<td><code>contribution_denied</code></td>
+<td>check</td>
+<td><code>installation_id</code> isn't registered for this <code>blog</code>. Omit <code>installation_id</code> unless you use the WordPress plugin.</td>
+</tr>
+<tr>
+<td>429</td>
+<td><code>rate_limit_exceeded</code></td>
+<td>All except pricing</td>
+<td>Too many requests in a minute. Wait the number of seconds in <code>Retry-After</code>.</td>
+</tr>
+<tr>
+<td>429</td>
+<td><code>usage_limit_exceeded</code></td>
+<td>check</td>
+<td>This month's checks are used up. Wait until <code>resets_at</code> from <code>GET /api/v1/usage</code>, or upgrade your plan.</td>
+</tr>
+<tr>
+<td>500</td>
+<td><code>detection_error</code></td>
+<td>check</td>
+<td>The check failed and wasn't counted. Retry later.</td>
+</tr>
+<tr>
+<td>500</td>
+<td><code>server_error</code>, <code>feedback_error</code>, <code>usage_error</code>, <code>sites_error</code></td>
+<td>verify-key, submit-spam, submit-ham, sites</td>
+<td>SpamAPI couldn't complete the request. Retry later.</td>
+</tr>
+<tr>
+<td>500</td>
+<td><code>internal_server_error</code></td>
+<td>All</td>
+<td>An unexpected failure. The body also contains <code>request_id</code>. Retry later.</td>
+</tr>
+<tr>
+<td>503</td>
+<td><code>detection_unavailable</code></td>
+<td>check</td>
+<td>Classification is temporarily unavailable or timed out. The check isn't counted. Hold the submission and retry later.</td>
+</tr>
+<tr>
+<td>503</td>
+<td><code>quota_unavailable</code></td>
+<td>check, verify-key, usage</td>
+<td>SpamAPI couldn't read or record usage. Retry later.</td>
+</tr>
+<tr>
+<td>503</td>
+<td><code>pricing_unavailable</code></td>
+<td>pricing</td>
+<td>Prices can't be read right now.</td>
+</tr>
+</tbody>
+</table>
+<p>Request bodies over 2 MiB are rejected. Codes beginning with
+<code>contribution_</code> from the shared-model endpoints are described in the
+<a href="../../api/openapi.yaml">OpenAPI specification</a>.</p>
+<p>A retry is a new request. If a check's response was lost, the retry can use a
+second check. Retry <code>5xx</code> and <code>429</code> responses with a growing delay, not in a
+tight loop.</p>
+<h2 id="rate-limits">Rate limits<a class="headerlink" href="#rate-limits" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Endpoints</th>
+<th>Limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Endpoints with an API key</td>
+<td>100 requests a minute per account, shared by all its keys</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/verify-key</code></td>
+<td>10 requests a minute per IP address, including dashboard sign-ins from that address</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/pricing</code></td>
+<td>No rate limit</td>
+</tr>
+</tbody>
+</table>
+<p>Responses carry the limit's state:</p>
+<ul>
+<li><code>X-RateLimit-Limit</code>: requests allowed in the window.</li>
+<li><code>X-RateLimit-Remaining</code>: requests left in the window.</li>
+<li><code>X-RateLimit-Reset</code>: end of the window as a Unix timestamp.</li>
+</ul>
+<p>When the limit is reached, the response is <code>429</code> <code>rate_limit_exceeded</code> with a
+<code>Retry-After</code> header in seconds:</p>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;rate_limit_exceeded&quot;,
+  &quot;message&quot;: &quot;Too many requests&quot;
+}
+</code></pre>
+<h2 id="monthly-checks">Monthly checks<a class="headerlink" href="#monthly-checks" title="Permanent link">&para;</a></h2>
+<p>Each plan includes a number of checks per month: 100 on Free; see
+<a href="https://spamapi.de/pricing/">plans and prices</a> for the others. All API keys of
+an account share them.</p>
+<ul>
+<li>Each successful <code>POST /api/v1/check</code> counts toward the UTC calendar month in
+  which it was made, independent of billing dates.</li>
+<li><a href="../test-mode/">Test values</a>, feedback reports and usage queries don't count.
+  Neither do checks that return an error, except when SpamAPI couldn't confirm
+  whether it recorded the check (<code>503</code> <code>quota_unavailable</code>); such a check may
+  count.</li>
+<li>Check responses carry <code>X-Usage-Limit</code>, <code>X-Usage-Used</code> and <code>X-Usage-Remaining</code>
+  headers. <code>GET /api/v1/usage</code> returns the same numbers and when they reset.</li>
+<li>Once the checks are used up, checks get <code>429</code> <code>usage_limit_exceeded</code> until the
+  next month or until you upgrade. Nothing extra is billed.</li>
+</ul>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;usage_limit_exceeded&quot;,
+  &quot;message&quot;: &quot;Monthly API usage limit exceeded&quot;
+}
+</code></pre>
+<p>Follow your usage on the dashboard's <a href="https://app.spamapi.de/dashboard/usage">usage page</a>.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

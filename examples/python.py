@@ -13,7 +13,7 @@ payload = {
 }
 
 resp = requests.post(
-    "https://spamapi.de/api/v1/check",
+    "https://api.spamapi.de/api/v1/check",
     headers={"X-API-Key": api_key},
     json=payload,
     timeout=10,

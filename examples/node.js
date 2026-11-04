@@ -3,7 +3,7 @@ const apiKey = process.env.SPAMAPI_KEY;
 if (!apiKey) {
   throw new Error("Set SPAMAPI_KEY to your SpamAPI dashboard API key (spa_...).");
 }
-const res = await fetch("https://spamapi.de/api/v1/check", {
+const res = await fetch("https://api.spamapi.de/api/v1/check", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",

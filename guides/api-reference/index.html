@@ -17,6 +17,7 @@
         <link href="../../css/base.css" rel="stylesheet">
         <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" disabled>
         <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <link href="../../stylesheets/extra.css" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
         <script>hljs.highlightAll();</script> 
     </head>
@@ -38,19 +39,28 @@
                                 <a href="../.." class="nav-link">Home</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Integrate</a>
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Get started</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../getting-started/" class="dropdown-item">Getting started</a>
+    <a href="../getting-started/" class="dropdown-item">REST API quickstart</a>
 </li>
+                                    
+<li>
+    <a href="../wordpress-plugin/" class="dropdown-item">WordPress setup</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Reference</a>
+                                <ul class="dropdown-menu">
                                     
 <li>
     <a href="./" class="dropdown-item active" aria-current="page">API reference</a>
 </li>
                                     
 <li>
-    <a href="../wordpress-plugin/" class="dropdown-item">WordPress plugin</a>
+    <a href="../errors-and-limits/" class="dropdown-item">Errors and limits</a>
 </li>
                                     
 <li>
@@ -65,6 +75,19 @@
                             <li class="nav-item">
                                 <a href="../../security/" class="nav-link">Security policy</a>
                             </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">SpamAPI</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="https://spamapi.de/" class="dropdown-item">Website</a>
+</li>
+                                    
+<li>
+    <a href="https://app.spamapi.de/dashboard" class="dropdown-item">Dashboard</a>
+</li>
+                                </ul>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ms-md-auto">
@@ -74,12 +97,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../getting-started/" class="nav-link">
+                                <a rel="prev" href="../wordpress-plugin/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../wordpress-plugin/" class="nav-link">
+                                <a rel="next" href="../errors-and-limits/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -131,37 +154,37 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-bs-level="1"><a href="#api-reference" class="nav-link">API Reference</a>
+            <li class="nav-item" data-bs-level="1"><a href="#api-reference" class="nav-link">API reference</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-bs-level="2"><a href="#public-api-api-key" class="nav-link">Public API (API Key)</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#public-api-responses" class="nav-link">Public API Responses</a>
+            <li class="nav-item" data-bs-level="2"><a href="#public-api" class="nav-link">Public API</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#dashboard-api-session" class="nav-link">Dashboard API (Session)</a>
+            <li class="nav-item" data-bs-level="2"><a href="#check-content" class="nav-link">Check content</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#auth-api" class="nav-link">Auth API</a>
+            <li class="nav-item" data-bs-level="2"><a href="#report-mistakes" class="nav-link">Report mistakes</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#error-format" class="nav-link">Error Format</a>
+            <li class="nav-item" data-bs-level="2"><a href="#monthly-usage" class="nav-link">Monthly usage</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#usage-headers" class="nav-link">Usage Headers</a>
+            <li class="nav-item" data-bs-level="2"><a href="#sites" class="nav-link">Sites</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#rate-limit-headers" class="nav-link">Rate Limit Headers</a>
+            <li class="nav-item" data-bs-level="2"><a href="#verify-a-key" class="nav-link">Verify a key</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#full-openapi-spec" class="nav-link">Full OpenAPI Spec</a>
+            <li class="nav-item" data-bs-level="2"><a href="#plans-and-prices" class="nav-link">Plans and prices</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#dashboard-and-auth-apis" class="nav-link">Dashboard and auth APIs</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -172,76 +195,278 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
-<h2 id="public-api-api-key">Public API (API Key)<a class="headerlink" href="#public-api-api-key" title="Permanent link">&para;</a></h2>
-<p>Base path: <code>/api/v1</code></p>
+<h1 id="api-reference">API reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<h2 id="public-api">Public API<a class="headerlink" href="#public-api" title="Permanent link">&para;</a></h2>
+<p>Send requests to <code>https://api.spamapi.de</code> under the base path <code>/api/v1</code>. Bodies
+are JSON with <code>Content-Type: application/json</code>, up to 2 MiB. Endpoints marked
+with a key need your API key in the <code>X-API-Key</code> header; the
+<a href="../getting-started/">quickstart</a> shows how to create one. Errors, rate limits and
+monthly checks are described in <a href="../errors-and-limits/">Errors and limits</a>. The
+<a href="../../api/openapi.yaml">OpenAPI specification</a> has the complete schemas.</p>
 <table>
 <thead>
 <tr>
 <th>Method</th>
 <th>Path</th>
+<th>Key</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>POST</td>
-<td>/verify-key</td>
-<td>Validate API key</td>
+<td><code>/check</code></td>
+<td>Yes</td>
+<td><a href="#check-content">Check content for spam</a></td>
 </tr>
 <tr>
 <td>POST</td>
-<td>/check</td>
-<td>Check content for spam</td>
+<td><code>/submit-spam</code></td>
+<td>Yes</td>
+<td><a href="#report-mistakes">Report spam that got through</a></td>
 </tr>
 <tr>
 <td>POST</td>
-<td>/submit-spam</td>
-<td>Report false negative</td>
+<td><code>/submit-ham</code></td>
+<td>Yes</td>
+<td><a href="#report-mistakes">Report legitimate content that was flagged</a></td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/usage</code></td>
+<td>Yes</td>
+<td><a href="#monthly-usage">This month's checks</a></td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/sites</code></td>
+<td>Yes</td>
+<td><a href="#sites">Sites that used your keys</a></td>
 </tr>
 <tr>
 <td>POST</td>
-<td>/submit-ham</td>
-<td>Report false positive</td>
+<td><code>/verify-key</code></td>
+<td>No</td>
+<td><a href="#verify-a-key">Validate a key</a></td>
 </tr>
 <tr>
 <td>GET</td>
-<td>/usage</td>
-<td>Monthly usage summary</td>
-</tr>
-<tr>
-<td>GET</td>
-<td>/sites</td>
-<td>Sites using the key</td>
-</tr>
-<tr>
-<td>GET</td>
-<td>/pricing</td>
-<td>Plans and prices (no API key)</td>
+<td><code>/pricing</code></td>
+<td>No</td>
+<td><a href="#plans-and-prices">Plans and prices</a></td>
 </tr>
 </tbody>
 </table>
-<h2 id="public-api-responses">Public API Responses<a class="headerlink" href="#public-api-responses" title="Permanent link">&para;</a></h2>
-<p>Both feedback endpoints return HTTP <code>200</code> with a JSON acknowledgement:</p>
+<p>The WordPress plugin also uses the shared-model endpoints under
+<code>/api/v1/training/</code>; see the OpenAPI specification and the
+<a href="../wordpress-plugin/#shared-model-contributions">WordPress guide</a>.</p>
+<h2 id="check-content">Check content<a class="headerlink" href="#check-content" title="Permanent link">&para;</a></h2>
+<p><code>POST /api/v1/check</code> classifies one comment or form submission. The
+<a href="../getting-started/#check-a-submission">quickstart</a> has a complete request and
+response.</p>
+<h3 id="check-request-fields">Check request fields<a class="headerlink" href="#check-request-fields" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>blog</code></td>
+<td>Required. Your site's URL, up to 2,048 bytes. Site statistics are grouped by it.</td>
+</tr>
+<tr>
+<td><code>user_ip</code></td>
+<td>Required. The visitor's IPv4 or IPv6 address.</td>
+</tr>
+<tr>
+<td><code>user_agent</code></td>
+<td>The visitor's browser user agent.</td>
+</tr>
+<tr>
+<td><code>referrer</code></td>
+<td>The page the visitor came from.</td>
+</tr>
+<tr>
+<td><code>permalink</code></td>
+<td>The page the submission was made on.</td>
+</tr>
+<tr>
+<td><code>comment_type</code></td>
+<td>The kind of submission, such as <code>comment</code>, <code>contact-form</code> or <code>signup</code>.</td>
+</tr>
+<tr>
+<td><code>comment_author</code></td>
+<td>The name the visitor entered, up to 255 bytes.</td>
+</tr>
+<tr>
+<td><code>comment_author_email</code></td>
+<td>The email address the visitor entered, up to 255 bytes.</td>
+</tr>
+<tr>
+<td><code>comment_author_url</code></td>
+<td>The website the visitor entered.</td>
+</tr>
+<tr>
+<td><code>comment_content</code></td>
+<td>The text of the comment or message.</td>
+</tr>
+<tr>
+<td><code>blog_lang</code></td>
+<td>Your site's language, such as <code>en</code> or <code>de_DE</code>.</td>
+</tr>
+<tr>
+<td><code>honeypot_field_value</code></td>
+<td>The value of a hidden form field that people leave empty.</td>
+</tr>
+<tr>
+<td><code>is_test</code>, <code>user_role</code></td>
+<td>Force a ham result; see <a href="../test-mode/#force-a-ham-result">test mode</a>.</td>
+</tr>
+<tr>
+<td><code>installation_id</code></td>
+<td>Used by the WordPress plugin. Omit it.</td>
+</tr>
+<tr>
+<td><code>api_key</code></td>
+<td>Optional. If present, it must be the key in the <code>X-API-Key</code> header.</td>
+</tr>
+<tr>
+<td><code>comment_date_gmt</code>, <code>blog_charset</code>, <code>honeypot_field_name</code>, <code>recheck_reason</code></td>
+<td>Accepted; currently not used.</td>
+</tr>
+</tbody>
+</table>
+<p>Send the fields you have. More context gives SpamAPI more to go on.</p>
+<h3 id="check-response-fields">Check response fields<a class="headerlink" href="#check-response-fields" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_spam</code></td>
+<td><code>true</code> if SpamAPI considers the submission spam.</td>
+</tr>
+<tr>
+<td><code>score</code></td>
+<td>From 0 (ham) to 1 (spam).</td>
+</tr>
+<tr>
+<td><code>recommendation</code></td>
+<td><code>allow</code>, <code>review</code> or <code>discard</code>, derived from the score.</td>
+</tr>
+<tr>
+<td><code>request_id</code></td>
+<td>Identifies the request; also in the <code>X-Request-ID</code> and <code>X-SpamAPI-Request-ID</code> headers.</td>
+</tr>
+<tr>
+<td><code>prediction_ref</code></td>
+<td>Reference to the stored check. Absent for <a href="../test-mode/">test values</a>.</td>
+</tr>
+<tr>
+<td><code>reasons</code></td>
+<td>Optional short notes about the result, for your logs. Their wording can change; don't build logic on them.</td>
+</tr>
+<tr>
+<td><code>statistical</code></td>
+<td>Optional diagnostics from SpamAPI's shared comment model, for information only.</td>
+</tr>
+</tbody>
+</table>
+<p>A successful check also returns the <code>X-Usage-Limit</code>, <code>X-Usage-Used</code> and
+<code>X-Usage-Remaining</code> headers, and <code>X-SpamAPI-Pro-Tip</code> with the recommendation.</p>
+<h2 id="report-mistakes">Report mistakes<a class="headerlink" href="#report-mistakes" title="Permanent link">&para;</a></h2>
+<p><code>POST /api/v1/submit-spam</code> reports spam that got through;
+<code>POST /api/v1/submit-ham</code> reports legitimate content that was flagged. Both take
+<code>blog</code> and <code>user_ip</code> (required), <code>user_agent</code>, <code>comment_type</code>, <code>comment_author</code>,
+<code>comment_author_email</code>, <code>comment_content</code> and optionally <code>api_key</code>, with the
+same meaning as for checks. Reports don't use checks and are counted in the
+dashboard's usage history. Both return HTTP <code>200</code>:</p>
 <pre><code class="language-json">{&quot;status&quot;: &quot;ok&quot;}
 </code></pre>
-<p><code>GET /api/v1/usage</code> returns the current month's quota and usage. <code>percentage</code> is
-a decimal string; <code>resets_at</code> is a UTC timestamp; <code>throttled</code> indicates that the
-account has reached its quota. A paid plan's quota applies until its subscription
-ends, including the rest of a paid period after cancellation; the account then
-uses the Free quota.</p>
+<h2 id="monthly-usage">Monthly usage<a class="headerlink" href="#monthly-usage" title="Permanent link">&para;</a></h2>
+<p><code>GET /api/v1/usage</code> returns this month's checks. It doesn't use one.</p>
 <pre><code class="language-json">{
-  &quot;limit&quot;: 100,
+  &quot;reserved&quot;: 1,
+  &quot;remaining&quot;: 9987,
+  &quot;limit&quot;: 10000,
   &quot;used&quot;: 12,
-  &quot;percentage&quot;: &quot;12.00&quot;,
-  &quot;resets_at&quot;: &quot;2026-11-01T00:00:00Z&quot;,
+  &quot;percentage&quot;: &quot;0.12&quot;,
+  &quot;resets_at&quot;: &quot;2026-12-01T00:00:00Z&quot;,
   &quot;throttled&quot;: false
 }
 </code></pre>
-<p><code>GET /api/v1/sites</code> returns <code>sites</code>, <code>total</code>, <code>limit</code>, and <code>offset</code>. Each site
-contains <code>site</code>, <code>api_calls</code>, <code>spam</code>, <code>ham</code>, <code>missed_spam</code>, <code>false_positives</code>,
-<code>first_seen</code>, and <code>last_seen</code>. Pagination defaults to 50 sites and is capped at
-100 per request. The dashboard's sites endpoint uses its own response schema.</p>
+<ul>
+<li><code>limit</code>: checks included in your plan this month; <code>0</code> for unlimited plans.</li>
+<li><code>used</code>: completed checks this month.</li>
+<li><code>reserved</code>: checks in progress.</li>
+<li><code>remaining</code>: checks left after <code>used</code> and <code>reserved</code>; <code>0</code> for unlimited plans.</li>
+<li><code>percentage</code>: <code>used</code> as a percentage of <code>limit</code>, as a decimal string.</li>
+<li><code>resets_at</code>: when the next month's checks start, in UTC.</li>
+<li><code>throttled</code>: <code>true</code> once the checks are used up; checks then get <code>429</code>.</li>
+</ul>
+<p>A paid plan's quota applies until its subscription ends, including the rest of a
+paid period after cancellation; the account then uses the Free quota.</p>
+<h2 id="sites">Sites<a class="headerlink" href="#sites" title="Permanent link">&para;</a></h2>
+<p><code>GET /api/v1/sites</code> lists the sites (<code>blog</code> values) that used your account's
+keys, most recently seen first.</p>
+<pre><code class="language-sh">curl &quot;https://api.spamapi.de/api/v1/sites?limit=50&amp;offset=0&quot; \
+  -H &quot;X-API-Key: $SPAMAPI_KEY&quot;
+</code></pre>
+<pre><code class="language-json">{
+  &quot;sites&quot;: [
+    {
+      &quot;site&quot;: &quot;https://example.com&quot;,
+      &quot;api_calls&quot;: 12,
+      &quot;spam&quot;: 2,
+      &quot;ham&quot;: 10,
+      &quot;missed_spam&quot;: 0,
+      &quot;false_positives&quot;: 0,
+      &quot;first_seen&quot;: &quot;2026-11-02T09:15:00Z&quot;,
+      &quot;last_seen&quot;: &quot;2026-11-04T16:40:12Z&quot;
+    }
+  ],
+  &quot;total&quot;: 1,
+  &quot;limit&quot;: 50,
+  &quot;offset&quot;: 0
+}
+</code></pre>
+<p><code>limit</code> defaults to 50 and is capped at 100. <code>missed_spam</code> and
+<code>false_positives</code> are currently always <code>0</code>. The dashboard's sites endpoint uses
+its own response schema.</p>
+<h2 id="verify-a-key">Verify a key<a class="headerlink" href="#verify-a-key" title="Permanent link">&para;</a></h2>
+<p><code>POST /api/v1/verify-key</code> checks a key sent in the body, without the
+<code>X-API-Key</code> header. The WordPress plugin's <strong>Test Connection</strong> uses it. It is
+limited to 10 requests a minute per IP address; to test a key from your own code,
+<code>GET /api/v1/usage</code> is simpler.</p>
+<pre><code class="language-json">{&quot;api_key&quot;: &quot;spa_...&quot;}
+</code></pre>
+<pre><code class="language-json">{
+  &quot;valid&quot;: true,
+  &quot;plan&quot;: &quot;free&quot;,
+  &quot;usage&quot;: {
+    &quot;reserved&quot;: 0,
+    &quot;remaining&quot;: 100,
+    &quot;limit&quot;: 100,
+    &quot;used&quot;: 0,
+    &quot;percentage&quot;: &quot;0.00&quot;,
+    &quot;resets_at&quot;: &quot;2026-12-01T00:00:00Z&quot;
+  }
+}
+</code></pre>
+<p><code>plan</code> is <code>free</code>, <code>pro</code>, <code>business</code> or <code>enterprise</code>. When SpamAPI's shared
+comment model accepts contributions, the response also contains
+<code>training_policy</code> for the WordPress plugin. An unknown, revoked or malformed key,
+or an account that can't use the API, returns HTTP <code>200</code> with:</p>
+<pre><code class="language-json">{&quot;valid&quot;: false}
+</code></pre>
+<h2 id="plans-and-prices">Plans and prices<a class="headerlink" href="#plans-and-prices" title="Permanent link">&para;</a></h2>
 <p><code>GET /api/v1/pricing</code> needs no API key. It lists the Free, Pro, Business and
 Enterprise plans with their monthly check quotas, and for Pro and Business the
 Stripe price that Checkout charges: <code>unit_amount</code> in the currency's minor unit
@@ -270,7 +495,11 @@ checks over the quota get HTTP <code>429</code> <code>usage_limit_exceeded</code
 <p>Prices are read from Stripe and reused for up to five minutes. If either price
 cannot be read or is not a fixed recurring amount, the endpoint returns HTTP
 <code>503</code> <code>pricing_unavailable</code> instead of default or outdated prices.</p>
-<h2 id="dashboard-api-session">Dashboard API (Session)<a class="headerlink" href="#dashboard-api-session" title="Permanent link">&para;</a></h2>
+<h2 id="dashboard-and-auth-apis">Dashboard and auth APIs<a class="headerlink" href="#dashboard-and-auth-apis" title="Permanent link">&para;</a></h2>
+<p>The dashboard at <code>https://app.spamapi.de</code> uses the following endpoints. They
+authenticate with a dashboard session, not an API key, and aren't meant for
+integrations; use the public API instead.</p>
+<h3 id="dashboard-api">Dashboard API<a class="headerlink" href="#dashboard-api" title="Permanent link">&para;</a></h3>
 <p>Base path: <code>/dashboard/api</code></p>
 <table>
 <thead>
@@ -352,8 +581,8 @@ defaults to six months and is capped at 24. Subscription details are wrapped in
 its scheduled end and <code>status</code> is unchanged; it is absent otherwise.</p>
 <p>Checkout requires <code>plan</code>, <code>success_url</code>, and <code>cancel_url</code>; the billing portal
 requires <code>return_url</code>. Redirect URLs must use the application's origin
-(<code>https://spamapi.de</code> for the hosted service). Both endpoints return <code>url</code>.</p>
-<h2 id="auth-api">Auth API<a class="headerlink" href="#auth-api" title="Permanent link">&para;</a></h2>
+(<code>https://app.spamapi.de</code> for the hosted service). Both endpoints return <code>url</code>.</p>
+<h3 id="auth-api">Auth API<a class="headerlink" href="#auth-api" title="Permanent link">&para;</a></h3>
 <p>Base path: <code>/auth</code></p>
 <table>
 <thead>
@@ -413,36 +642,8 @@ returns HTTP <code>204</code> with no body.</p>
 <code>user</code>. Forgot-password accepts <code>email</code> and returns HTTP <code>202</code> with
 <code>{"status":"email_sent"}</code>. Reset-password accepts <code>token</code> and <code>new_password</code>
 and returns the user object directly.</p>
-<h2 id="error-format">Error Format<a class="headerlink" href="#error-format" title="Permanent link">&para;</a></h2>
-<p>The public and dashboard APIs use the following JSON error format. Auth
-handlers return a JSON <code>error</code> string; their rate limiter and the dashboard
-session middleware can return plain-text errors.</p>
-<pre><code class="language-json">{
-  &quot;error&quot;: &quot;invalid_api_key&quot;,
-  &quot;message&quot;: &quot;Invalid API key&quot;,
-  &quot;request_id&quot;: &quot;req_123&quot;
-}
-</code></pre>
-<p><code>POST /api/v1/check</code> returns HTTP <code>503</code> with error code <code>detection_unavailable</code>
-when the selected classifier fails or times out. This error carries no spam
-decision, score, or recommendation. Failed classifications do not increment
-classification usage or update site statistics. See
-<a href="../troubleshooting/#503-service-unavailable">troubleshooting</a> for how to handle
-this response.</p>
-<h2 id="usage-headers">Usage Headers<a class="headerlink" href="#usage-headers" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>X-Usage-Limit</code></li>
-<li><code>X-Usage-Used</code></li>
-<li><code>X-Usage-Remaining</code></li>
-</ul>
-<h2 id="rate-limit-headers">Rate Limit Headers<a class="headerlink" href="#rate-limit-headers" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>X-RateLimit-Limit</code></li>
-<li><code>X-RateLimit-Remaining</code></li>
-<li><code>X-RateLimit-Reset</code></li>
-</ul>
-<h2 id="full-openapi-spec">Full OpenAPI Spec<a class="headerlink" href="#full-openapi-spec" title="Permanent link">&para;</a></h2>
-<p>See <a href="../../api/openapi.yaml">docs/api/openapi.yaml</a>.</p></div>
+<p>Auth handlers return a JSON <code>error</code> string; their rate limiter and the dashboard
+session middleware can return plain-text errors.</p></div>
             </div>
         </div>
 

@@ -8,7 +8,7 @@
         
         <link rel="canonical" href="https://deicod.github.io/spamapi-docs/guides/getting-started/">
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>Getting started - SpamAPI Documentation</title>
+        <title>REST API quickstart - SpamAPI Documentation</title>
         <link href="../../css/bootstrap.min.css" rel="stylesheet">
         <link href="../../css/fontawesome.min.css" rel="stylesheet">
         <link href="../../css/brands.min.css" rel="stylesheet">
@@ -17,6 +17,7 @@
         <link href="../../css/base.css" rel="stylesheet">
         <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" disabled>
         <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <link href="../../stylesheets/extra.css" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
         <script>hljs.highlightAll();</script> 
     </head>
@@ -38,19 +39,28 @@
                                 <a href="../.." class="nav-link">Home</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Integrate</a>
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Get started</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="./" class="dropdown-item active" aria-current="page">Getting started</a>
+    <a href="./" class="dropdown-item active" aria-current="page">REST API quickstart</a>
 </li>
+                                    
+<li>
+    <a href="../wordpress-plugin/" class="dropdown-item">WordPress setup</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Reference</a>
+                                <ul class="dropdown-menu">
                                     
 <li>
     <a href="../api-reference/" class="dropdown-item">API reference</a>
 </li>
                                     
 <li>
-    <a href="../wordpress-plugin/" class="dropdown-item">WordPress plugin</a>
+    <a href="../errors-and-limits/" class="dropdown-item">Errors and limits</a>
 </li>
                                     
 <li>
@@ -64,6 +74,19 @@
                             </li>
                             <li class="nav-item">
                                 <a href="../../security/" class="nav-link">Security policy</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">SpamAPI</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="https://spamapi.de/" class="dropdown-item">Website</a>
+</li>
+                                    
+<li>
+    <a href="https://app.spamapi.de/dashboard" class="dropdown-item">Dashboard</a>
+</li>
+                                </ul>
                             </li>
                         </ul>
 
@@ -79,7 +102,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../api-reference/" class="nav-link">
+                                <a rel="next" href="../wordpress-plugin/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -131,29 +154,33 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-bs-level="1"><a href="#getting-started" class="nav-link">Getting Started</a>
+            <li class="nav-item" data-bs-level="1"><a href="#getting-started-with-the-rest-api" class="nav-link">Getting started with the REST API</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-bs-level="2"><a href="#base-url" class="nav-link">Base URL</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#authentication" class="nav-link">Authentication</a>
+            <li class="nav-item" data-bs-level="2"><a href="#create-a-free-account" class="nav-link">Create a free account</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#verify-key" class="nav-link">Verify Key</a>
+            <li class="nav-item" data-bs-level="2"><a href="#create-an-api-key" class="nav-link">Create an API key</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#check-content" class="nav-link">Check Content</a>
+            <li class="nav-item" data-bs-level="2"><a href="#check-that-the-key-works" class="nav-link">Check that the key works</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#rate-limits" class="nav-link">Rate Limits</a>
+            <li class="nav-item" data-bs-level="2"><a href="#check-a-submission" class="nav-link">Check a submission</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#next-steps" class="nav-link">Next Steps</a>
+            <li class="nav-item" data-bs-level="2"><a href="#act-on-the-result" class="nav-link">Act on the result</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#report-mistakes" class="nav-link">Report mistakes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#before-you-go-live" class="nav-link">Before you go live</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -164,50 +191,181 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
-<p>This guide walks through verifying an API key and checking content for spam.</p>
-<h2 id="base-url">Base URL<a class="headerlink" href="#base-url" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>https://spamapi.de</code></li>
-</ul>
-<h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h2>
-<p>Use an API key in the request header:</p>
-<ul>
-<li><code>X-API-Key: spa_...</code></li>
-</ul>
-<p>Replace <code>spa_...</code> with a SpamAPI key from the dashboard. Stripe keys beginning
-with <code>sk_live_</code> or <code>sk_test_</code> cannot authenticate SpamAPI requests.</p>
-<h2 id="verify-key">Verify Key<a class="headerlink" href="#verify-key" title="Permanent link">&para;</a></h2>
-<p><code>POST /api/v1/verify-key</code></p>
+<h1 id="getting-started-with-the-rest-api">Getting started with the REST API<a class="headerlink" href="#getting-started-with-the-rest-api" title="Permanent link">&para;</a></h1>
+<p>Check your first comment or form submission in a few minutes: create a free
+account and an API key, then send a request from the command line. Using
+WordPress? Follow the <a href="../wordpress-plugin/">WordPress setup</a> instead; it uses the
+same account and key.</p>
+<p>API requests go to <code>https://api.spamapi.de</code>. Your account, keys and usage are in
+the <a href="https://app.spamapi.de/dashboard">dashboard</a>.</p>
+<h2 id="create-a-free-account">Create a free account<a class="headerlink" href="#create-a-free-account" title="Permanent link">&para;</a></h2>
+<p><a href="https://app.spamapi.de/auth/register?returnTo=%2Fdashboard%2Fkeys">Create a free account</a>
+with a username, email address and password. SpamAPI emails you a verification
+token; open the link in the email, or paste the token on the verification page.
+You then land on the dashboard's API keys page. The Free plan includes 100 checks
+a month and needs no payment details.</p>
+<h2 id="create-an-api-key">Create an API key<a class="headerlink" href="#create-an-api-key" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Open <a href="https://app.spamapi.de/dashboard/keys">API keys</a> in the dashboard.</li>
+<li>Enter a name you will recognize, such as the site or app that will use the
+   key, and select <strong>Create key</strong>.</li>
+<li>Copy the key, which starts with <code>spa_</code>, and store it somewhere safe. The
+   dashboard shows it only this once.</li>
+<li>Check <strong>I saved this key</strong> and close the dialog.</li>
+</ol>
+<p>Keep the key on your server and send it in the <code>X-API-Key</code> header. Never put it
+in code that runs in a visitor's browser. If a key is lost or exposed, revoke it
+on the API keys page and create a new one. Stripe keys (<code>sk_live_…</code>, <code>sk_test_…</code>)
+are not SpamAPI keys.</p>
+<p>All keys of an account share its monthly checks. For the commands below, store
+the key in an environment variable:</p>
+<pre><code class="language-sh">export SPAMAPI_KEY='spa_...'
+</code></pre>
+<h2 id="check-that-the-key-works">Check that the key works<a class="headerlink" href="#check-that-the-key-works" title="Permanent link">&para;</a></h2>
+<pre><code class="language-sh">curl https://api.spamapi.de/api/v1/usage \
+  -H &quot;X-API-Key: $SPAMAPI_KEY&quot;
+</code></pre>
+<p>A working key returns this month's checks. This request doesn't use one.</p>
 <pre><code class="language-json">{
-  &quot;api_key&quot;: &quot;spa_...&quot;
+  &quot;reserved&quot;: 0,
+  &quot;remaining&quot;: 100,
+  &quot;limit&quot;: 100,
+  &quot;used&quot;: 0,
+  &quot;percentage&quot;: &quot;0.00&quot;,
+  &quot;resets_at&quot;: &quot;2026-12-01T00:00:00Z&quot;,
+  &quot;throttled&quot;: false
 }
 </code></pre>
-<h2 id="check-content">Check Content<a class="headerlink" href="#check-content" title="Permanent link">&para;</a></h2>
-<p><code>POST /api/v1/check</code></p>
+<p>HTTP <code>401</code> with <code>invalid_api_key</code> means the key is mistyped, revoked, or not a
+SpamAPI key; <code>missing_api_key</code> means the header is missing.</p>
+<h2 id="check-a-submission">Check a submission<a class="headerlink" href="#check-a-submission" title="Permanent link">&para;</a></h2>
+<p>Send each comment or form submission to <code>POST /api/v1/check</code> before you publish,
+store or forward it. Only <code>blog</code>, your site's URL, and <code>user_ip</code>, the visitor's
+IP address, are required. Add the text, author details and user agent you have;
+the <a href="../api-reference/#check-request-fields">API reference</a> lists every field.</p>
+<pre><code class="language-sh">curl https://api.spamapi.de/api/v1/check \
+  -H &quot;X-API-Key: $SPAMAPI_KEY&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;blog&quot;: &quot;https://example.com&quot;,
+    &quot;user_ip&quot;: &quot;203.0.113.10&quot;,
+    &quot;user_agent&quot;: &quot;Mozilla/5.0 (X11; Linux x86_64)&quot;,
+    &quot;comment_type&quot;: &quot;comment&quot;,
+    &quot;comment_author&quot;: &quot;Watch Deals&quot;,
+    &quot;comment_author_email&quot;: &quot;deals@example.net&quot;,
+    &quot;comment_content&quot;: &quot;Cheap replica watches, order now!&quot;
+  }'
+</code></pre>
+<p>The response classifies the submission:</p>
 <pre><code class="language-json">{
-  &quot;blog&quot;: &quot;https://example.com&quot;,
-  &quot;user_ip&quot;: &quot;203.0.113.10&quot;,
-  &quot;user_agent&quot;: &quot;Mozilla/5.0&quot;,
-  &quot;comment_content&quot;: &quot;Buy cheap pills...&quot;,
-  &quot;is_test&quot;: false
+  &quot;is_spam&quot;: true,
+  &quot;score&quot;: 0.594,
+  &quot;recommendation&quot;: &quot;review&quot;,
+  &quot;request_id&quot;: &quot;0f6c2a7e-5d1b-4c39-9e8a-2b7d4f1c6a90&quot;,
+  &quot;prediction_ref&quot;: &quot;5b0e8f3c-9a4d-4e21-8c67-1d2f3a4b5c6d&quot;
 }
 </code></pre>
-<p>Response includes:</p>
+<p>Your score can differ. The response can also contain optional fields such as
+<code>reasons</code>, short notes about the result for your logs; ignore fields you don't
+use. Each successful check uses one of your monthly checks.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_spam</code></td>
+<td><code>true</code> if SpamAPI considers the submission spam.</td>
+</tr>
+<tr>
+<td><code>score</code></td>
+<td>From 0 (ham) to 1 (spam).</td>
+</tr>
+<tr>
+<td><code>recommendation</code></td>
+<td><code>allow</code>, <code>review</code> or <code>discard</code>; see below.</td>
+</tr>
+<tr>
+<td><code>request_id</code></td>
+<td>Identifies the request. Include it when you contact support.</td>
+</tr>
+<tr>
+<td><code>prediction_ref</code></td>
+<td>Reference to the stored check.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="act-on-the-result">Act on the result<a class="headerlink" href="#act-on-the-result" title="Permanent link">&para;</a></h2>
+<p>Your code decides what happens. SpamAPI doesn't publish or delete anything.</p>
+<table>
+<thead>
+<tr>
+<th><code>recommendation</code></th>
+<th>Suggested action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>allow</code></td>
+<td>Publish or deliver the submission as usual.</td>
+</tr>
+<tr>
+<td><code>review</code></td>
+<td>Hold it for a person to check.</td>
+</tr>
+<tr>
+<td><code>discard</code></td>
+<td>Reject it or move it to spam.</td>
+</tr>
+</tbody>
+</table>
+<p>Scores are estimates and some results will be wrong, so keep a way to review
+held submissions. When the API can't make a decision, it returns an error
+instead of a result:</p>
 <ul>
-<li><code>is_spam</code> (boolean)</li>
-<li><code>score</code> (0..1)</li>
-<li><code>recommendation</code> (<code>allow</code>, <code>review</code>, <code>discard</code>)</li>
+<li><code>503</code> <code>detection_unavailable</code>: classification is temporarily unavailable. The
+  check isn't counted. Hold the submission and retry later, or let a person
+  review it; don't treat the error as <code>allow</code>.</li>
+<li><code>429</code> <code>usage_limit_exceeded</code>: this month's checks are used up. Checks resume
+  when the quota resets (<code>resets_at</code>) or after you
+  <a href="https://spamapi.de/pricing/">upgrade</a>.</li>
+<li><code>429</code> <code>rate_limit_exceeded</code>: too many requests in a minute. Wait for the
+  number of seconds in the <code>Retry-After</code> header.</li>
 </ul>
-<p>If classification is unavailable, the API returns <code>503</code> with
-<code>error: "detection_unavailable"</code> and no decision. Handle this error explicitly;
-it does not indicate HAM and does not consume classification usage.</p>
-<h2 id="rate-limits">Rate Limits<a class="headerlink" href="#rate-limits" title="Permanent link">&para;</a></h2>
-<p>When rate limiting or usage limits apply, the API responds with <code>429</code> and a JSON error payload.</p>
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p><a href="../errors-and-limits/">Errors and limits</a> lists every error code and what to do.</p>
+<h2 id="report-mistakes">Report mistakes<a class="headerlink" href="#report-mistakes" title="Permanent link">&para;</a></h2>
+<p>If a result was wrong, send the same fields to <code>POST /api/v1/submit-spam</code> for
+spam that got through, or to <code>POST /api/v1/submit-ham</code> for legitimate content
+that was flagged:</p>
+<pre><code class="language-sh">curl https://api.spamapi.de/api/v1/submit-ham \
+  -H &quot;X-API-Key: $SPAMAPI_KEY&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;blog&quot;: &quot;https://example.com&quot;,
+    &quot;user_ip&quot;: &quot;198.51.100.7&quot;,
+    &quot;comment_author&quot;: &quot;Jane Doe&quot;,
+    &quot;comment_author_email&quot;: &quot;jane@example.com&quot;,
+    &quot;comment_content&quot;: &quot;Could you send me a quote for a new roof?&quot;
+  }'
+</code></pre>
+<pre><code class="language-json">{&quot;status&quot;: &quot;ok&quot;}
+</code></pre>
+<p>Reports don't use checks. The dashboard's
+<a href="https://app.spamapi.de/dashboard/usage">usage page</a> counts them.</p>
+<h2 id="before-you-go-live">Before you go live<a class="headerlink" href="#before-you-go-live" title="Permanent link">&para;</a></h2>
 <ul>
-<li>See the API reference in <a href="../api-reference/">docs/guides/api-reference.md</a>.</li>
-<li>Review test mode behavior in <a href="../test-mode/">docs/guides/test-mode.md</a>.</li>
+<li>Test your integration with <a href="../test-mode/">test mode</a> values, which skip
+  classification and don't use checks.</li>
+<li>Follow your monthly checks in the <a href="https://app.spamapi.de/dashboard/usage">dashboard</a>
+  or with <code>GET /api/v1/usage</code>, and compare <a href="https://spamapi.de/pricing/">plans</a>
+  if you need more.</li>
+<li>Start from an example in <a href="../../examples/go.go">Go</a>,
+  <a href="../../examples/node.js">JavaScript</a>, <a href="../../examples/php.php">PHP</a> or
+  <a href="../../examples/python.py">Python</a>.</li>
+<li>Keep <a href="../troubleshooting/">troubleshooting</a> at hand.</li>
 </ul></div>
             </div>
         </div>

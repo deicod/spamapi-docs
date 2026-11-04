@@ -22,7 +22,7 @@ func main() {
 	}
 
 	body, _ := json.Marshal(payload)
-	req, _ := http.NewRequest(http.MethodPost, "https://spamapi.de/api/v1/check", bytes.NewReader(body))
+	req, _ := http.NewRequest(http.MethodPost, "https://api.spamapi.de/api/v1/check", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", apiKey)
 

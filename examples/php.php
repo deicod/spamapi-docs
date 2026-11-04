@@ -1,7 +1,7 @@
 <?php
 
 $apiKey = getenv('SPAMAPI_KEY');
-$url = 'https://spamapi.de/api/v1/check';
+$url = 'https://api.spamapi.de/api/v1/check';
 
 $payload = [
     'api_key' => $apiKey,

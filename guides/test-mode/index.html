@@ -17,6 +17,7 @@
         <link href="../../css/base.css" rel="stylesheet">
         <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" disabled>
         <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <link href="../../stylesheets/extra.css" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
         <script>hljs.highlightAll();</script> 
     </head>
@@ -38,19 +39,28 @@
                                 <a href="../.." class="nav-link">Home</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Integrate</a>
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Get started</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../getting-started/" class="dropdown-item">Getting started</a>
+    <a href="../getting-started/" class="dropdown-item">REST API quickstart</a>
 </li>
+                                    
+<li>
+    <a href="../wordpress-plugin/" class="dropdown-item">WordPress setup</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Reference</a>
+                                <ul class="dropdown-menu">
                                     
 <li>
     <a href="../api-reference/" class="dropdown-item">API reference</a>
 </li>
                                     
 <li>
-    <a href="../wordpress-plugin/" class="dropdown-item">WordPress plugin</a>
+    <a href="../errors-and-limits/" class="dropdown-item">Errors and limits</a>
 </li>
                                     
 <li>
@@ -65,6 +75,19 @@
                             <li class="nav-item">
                                 <a href="../../security/" class="nav-link">Security policy</a>
                             </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">SpamAPI</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="https://spamapi.de/" class="dropdown-item">Website</a>
+</li>
+                                    
+<li>
+    <a href="https://app.spamapi.de/dashboard" class="dropdown-item">Dashboard</a>
+</li>
+                                </ul>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ms-md-auto">
@@ -74,7 +97,7 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../wordpress-plugin/" class="nav-link">
+                                <a rel="prev" href="../errors-and-limits/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
@@ -131,17 +154,17 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-bs-level="1"><a href="#test-mode-magic-values" class="nav-link">Test Mode &amp; Magic Values</a>
+            <li class="nav-item" data-bs-level="1"><a href="#test-mode-and-test-values" class="nav-link">Test mode and test values</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-bs-level="2"><a href="#test-mode" class="nav-link">Test Mode</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#guaranteed-spam-values" class="nav-link">Guaranteed Spam Values</a>
+            <li class="nav-item" data-bs-level="2"><a href="#force-a-spam-result" class="nav-link">Force a spam result</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#notes" class="nav-link">Notes</a>
+            <li class="nav-item" data-bs-level="2"><a href="#force-a-ham-result" class="nav-link">Force a ham result</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#test-the-wordpress-plugin" class="nav-link">Test the WordPress plugin</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -152,19 +175,92 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="test-mode-magic-values">Test Mode &amp; Magic Values<a class="headerlink" href="#test-mode-magic-values" title="Permanent link">&para;</a></h1>
-<h2 id="test-mode">Test Mode<a class="headerlink" href="#test-mode" title="Permanent link">&para;</a></h2>
-<p>Set <code>is_test=true</code> in <code>/api/v1/check</code> to enable test mode behavior.</p>
-<h2 id="guaranteed-spam-values">Guaranteed Spam Values<a class="headerlink" href="#guaranteed-spam-values" title="Permanent link">&para;</a></h2>
-<p>Use these values to force spam detection in tests:</p>
+<h1 id="test-mode-and-test-values">Test mode and test values<a class="headerlink" href="#test-mode-and-test-values" title="Permanent link">&para;</a></h1>
+<p>Use these values to test how your integration handles spam and ham results.
+SpamAPI answers them with a fixed result, without classifying the content.</p>
 <ul>
-<li><code>comment_author</code>: <code>spamapi-guaranteed-spam</code></li>
-<li><code>comment_author</code>: <code>viagra-test-123</code></li>
-<li><code>comment_author_email</code>: <code>spam@test.spamapi.com</code></li>
-<li><code>comment_author_email</code>: <code>akismet-guaranteed-spam@example.com</code></li>
+<li>They need a valid API key and count toward <a href="../errors-and-limits/#rate-limits">rate limits</a>.</li>
+<li>They don't use monthly checks and don't appear in usage or site statistics.
+  Once this month's checks are used up, they are rejected with <code>429</code>
+  <code>usage_limit_exceeded</code> like any other check.</li>
+<li>Their responses have no <code>prediction_ref</code>, because no check is stored.</li>
 </ul>
-<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
-<p>Test mode behavior is intended for integration tests and staging environments.</p></div>
+<h2 id="force-a-spam-result">Force a spam result<a class="headerlink" href="#force-a-spam-result" title="Permanent link">&para;</a></h2>
+<p>Send one of these values in <code>POST /api/v1/check</code>. Matching ignores letter case.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>comment_author</code></td>
+<td><code>spamapi-guaranteed-spam</code></td>
+</tr>
+<tr>
+<td><code>comment_author</code></td>
+<td><code>viagra-test-123</code></td>
+</tr>
+<tr>
+<td><code>comment_author_email</code></td>
+<td><code>spam@test.spamapi.com</code></td>
+</tr>
+<tr>
+<td><code>comment_author_email</code></td>
+<td><code>akismet-guaranteed-spam@example.com</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-sh">curl https://api.spamapi.de/api/v1/check \
+  -H &quot;X-API-Key: $SPAMAPI_KEY&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;blog&quot;: &quot;https://example.com&quot;,
+    &quot;user_ip&quot;: &quot;203.0.113.10&quot;,
+    &quot;comment_author&quot;: &quot;spamapi-guaranteed-spam&quot;,
+    &quot;comment_content&quot;: &quot;Test submission&quot;
+  }'
+</code></pre>
+<pre><code class="language-json">{
+  &quot;is_spam&quot;: true,
+  &quot;score&quot;: 1,
+  &quot;recommendation&quot;: &quot;discard&quot;,
+  &quot;reasons&quot;: [&quot;guaranteed_spam&quot;],
+  &quot;request_id&quot;: &quot;6f1d9c2b-3e4a-4b5c-8d7e-9f0a1b2c3d4e&quot;
+}
+</code></pre>
+<h2 id="force-a-ham-result">Force a ham result<a class="headerlink" href="#force-a-ham-result" title="Permanent link">&para;</a></h2>
+<p>Set <code>is_test</code> to <code>true</code> and <code>user_role</code> to <code>administrator</code>. Both are required;
+<code>is_test</code> alone doesn't change the result. This takes precedence over the spam
+values above.</p>
+<pre><code class="language-sh">curl https://api.spamapi.de/api/v1/check \
+  -H &quot;X-API-Key: $SPAMAPI_KEY&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;blog&quot;: &quot;https://example.com&quot;,
+    &quot;user_ip&quot;: &quot;203.0.113.10&quot;,
+    &quot;comment_content&quot;: &quot;Test submission&quot;,
+    &quot;user_role&quot;: &quot;administrator&quot;,
+    &quot;is_test&quot;: true
+  }'
+</code></pre>
+<pre><code class="language-json">{
+  &quot;is_spam&quot;: false,
+  &quot;score&quot;: 0,
+  &quot;recommendation&quot;: &quot;allow&quot;,
+  &quot;request_id&quot;: &quot;1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d&quot;
+}
+</code></pre>
+<p>Don't send <code>is_test</code> or <code>user_role</code> from production traffic unless you mean to
+skip classification.</p>
+<h2 id="test-the-wordpress-plugin">Test the WordPress plugin<a class="headerlink" href="#test-the-wordpress-plugin" title="Permanent link">&para;</a></h2>
+<p>Sign out of WordPress, or use a private browser window, and post a comment or
+submit a supported form with the email address <code>spam@test.spamapi.com</code>. The
+plugin treats it as spam; see
+<a href="../wordpress-plugin/#supported-comments-and-forms">what happens to spam</a> for each
+form plugin. Comments from users who can moderate comments aren't checked.</p></div>
             </div>
         </div>
 

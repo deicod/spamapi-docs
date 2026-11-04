@@ -8,7 +8,7 @@
         
         <link rel="canonical" href="https://deicod.github.io/spamapi-docs/guides/wordpress-plugin/">
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>WordPress plugin - SpamAPI Documentation</title>
+        <title>WordPress setup - SpamAPI Documentation</title>
         <link href="../../css/bootstrap.min.css" rel="stylesheet">
         <link href="../../css/fontawesome.min.css" rel="stylesheet">
         <link href="../../css/brands.min.css" rel="stylesheet">
@@ -17,6 +17,7 @@
         <link href="../../css/base.css" rel="stylesheet">
         <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" disabled>
         <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <link href="../../stylesheets/extra.css" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
         <script>hljs.highlightAll();</script> 
     </head>
@@ -38,19 +39,28 @@
                                 <a href="../.." class="nav-link">Home</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Integrate</a>
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Get started</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../getting-started/" class="dropdown-item">Getting started</a>
+    <a href="../getting-started/" class="dropdown-item">REST API quickstart</a>
 </li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">WordPress setup</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Reference</a>
+                                <ul class="dropdown-menu">
                                     
 <li>
     <a href="../api-reference/" class="dropdown-item">API reference</a>
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active" aria-current="page">WordPress plugin</a>
+    <a href="../errors-and-limits/" class="dropdown-item">Errors and limits</a>
 </li>
                                     
 <li>
@@ -65,6 +75,19 @@
                             <li class="nav-item">
                                 <a href="../../security/" class="nav-link">Security policy</a>
                             </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">SpamAPI</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="https://spamapi.de/" class="dropdown-item">Website</a>
+</li>
+                                    
+<li>
+    <a href="https://app.spamapi.de/dashboard" class="dropdown-item">Dashboard</a>
+</li>
+                                </ul>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ms-md-auto">
@@ -74,12 +97,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../api-reference/" class="nav-link">
+                                <a rel="prev" href="../getting-started/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../test-mode/" class="nav-link">
+                                <a rel="next" href="../api-reference/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -131,9 +154,9 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-bs-level="1"><a href="#wordpress-plugin-installation" class="nav-link">WordPress Plugin Installation</a>
+            <li class="nav-item" data-bs-level="1"><a href="#wordpress-plugin-setup" class="nav-link">WordPress plugin setup</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-bs-level="2"><a href="#requirements" class="nav-link">Requirements</a>
+            <li class="nav-item" data-bs-level="2"><a href="#before-you-start" class="nav-link">Before you start</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -141,7 +164,19 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-bs-level="2"><a href="#connect-your-spamapi-account" class="nav-link">Connect your SpamAPI account</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-bs-level="2"><a href="#configure" class="nav-link">Configure</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#supported-comments-and-forms" class="nav-link">Supported comments and forms</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#check-that-it-works" class="nav-link">Check that it works</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -156,11 +191,21 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="wordpress-plugin-installation">WordPress Plugin Installation<a class="headerlink" href="#wordpress-plugin-installation" title="Permanent link">&para;</a></h1>
-<h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
+<h1 id="wordpress-plugin-setup">WordPress plugin setup<a class="headerlink" href="#wordpress-plugin-setup" title="Permanent link">&para;</a></h1>
+<p>The SpamAPI Anti-Spam plugin checks WordPress comments and the submissions of
+Contact Form 7, Gravity Forms and WPForms, without any coding. Setup takes a
+SpamAPI account, an API key and a few minutes in the WordPress admin.</p>
+<h2 id="before-you-start">Before you start<a class="headerlink" href="#before-you-start" title="Permanent link">&para;</a></h2>
 <ul>
-<li>WordPress 6.4 or newer</li>
-<li>PHP 8.3 or newer</li>
+<li>WordPress 6.4 or newer and PHP 8.3 or newer.</li>
+<li>A SpamAPI account:
+  <a href="https://app.spamapi.de/auth/register?returnTo=%2Fdashboard%2Fkeys">create a free account</a>,
+  or <a href="https://app.spamapi.de/auth/login?returnTo=%2Fdashboard%2Fkeys">sign in</a>.
+  The Free plan includes 100 checks a month.</li>
+<li>An API key from the dashboard's <a href="https://app.spamapi.de/dashboard/keys">API keys</a>
+  page. The <a href="../getting-started/#create-an-api-key">quickstart</a> shows how to create
+  one. Use a separate key for each site, so you can revoke one without affecting
+  the others.</li>
 </ul>
 <p>Use a current WordPress release receiving upstream security fixes. The plugin's
 minimum version is a compatibility floor, not a guarantee of upstream security
@@ -175,27 +220,80 @@ compatible in the <a href="https://make.wordpress.org/core/handbook/references/p
 <li>Download the <a href="../../downloads/spamapi-antispam.zip">SpamAPI Anti-Spam plugin ZIP</a>.</li>
 <li>In the WordPress admin, open <strong>Plugins → Add New Plugin → Upload Plugin</strong>.</li>
 <li>Select <code>spamapi-antispam.zip</code>, click <strong>Install Now</strong>, then <strong>Activate Plugin</strong>.</li>
-<li>Open <strong>Settings → SpamAPI</strong> and paste your dashboard API key. The API URL
-   defaults to <code>https://spamapi.de/api/v1</code>; change it only for a self-hosted service.</li>
-<li>Save the settings, click <strong>Test Connection</strong>, and enable spam protection.</li>
 </ol>
 <p>For a manual installation, extract the ZIP and copy its <code>spamapi-antispam</code>
 folder to <code>wp-content/plugins/</code>, then activate it from <strong>Plugins</strong>. The download
 includes the PHP files, admin assets, and translations needed to run the plugin;
 no Composer installation is required.</p>
+<h2 id="connect-your-spamapi-account">Connect your SpamAPI account<a class="headerlink" href="#connect-your-spamapi-account" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Open <strong>Settings → SpamAPI</strong> and paste your API key into <strong>API Key</strong>. Leave
+   <strong>API URL</strong> unchanged unless you run your own SpamAPI server.</li>
+<li>Click <strong>Save Settings</strong>, then <strong>Test Connection</strong>. It tests the saved key.
+   “Connection successful!” followed by your plan, such as <code>(free)</code>, means the
+   plugin can reach SpamAPI. “Connection failed” is followed by the reason; see
+   <a href="../troubleshooting/#wordpress-plugin">troubleshooting</a>.</li>
+<li>Under <strong>Enable SpamAPI</strong>, check <strong>Enable spam protection</strong>, choose a
+   <strong>Strictness Level</strong> and click <strong>Save Settings</strong> again.</li>
+</ol>
+<p>Protection stays off until it is enabled and a key is saved.</p>
 <h2 id="configure">Configure<a class="headerlink" href="#configure" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Enable SpamAPI</strong> turns protection on. The plugin then checks WordPress
-  comments and the submissions of every supported form plugin that is active:
-  Contact Form 7, Gravity Forms and WPForms. Pingbacks and trackbacks are not
-  checked.</li>
+  comments and the submissions of every supported form plugin that is active.</li>
 <li><strong>Strictness Level</strong> applies to all checks: Lenient blocks only obvious spam,
   Balanced (the default) blocks likely spam, and Strict blocks anything
-  suspicious.</li>
+  suspicious. Higher strictness may block more legitimate content.</li>
 </ul>
 <p>If SpamAPI can't be reached or returns an error, the comment or form
 submission goes through unchecked and the plugin writes the error to the PHP
-error log.</p>
+error log. The same happens when the month's checks are used up or the key no
+longer works. The settings page shows this month's usage.</p>
+<h2 id="supported-comments-and-forms">Supported comments and forms<a class="headerlink" href="#supported-comments-and-forms" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>What's checked</th>
+<th>What happens to spam</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WordPress comments</td>
+<td>New comments from visitors, including signed-in users who can't moderate comments</td>
+<td>The comment goes to the spam list under <strong>Comments</strong>, where you can mark it as not spam. A SpamAPI column shows each result.</td>
+</tr>
+<tr>
+<td>Contact Form 7</td>
+<td>The text of the form's multi-line fields as the message, plus the sender's name and email address</td>
+<td>Contact Form 7 treats the submission as spam: it isn't emailed to you, and the visitor sees the form's error message.</td>
+</tr>
+<tr>
+<td>Gravity Forms</td>
+<td>The name and email fields and the text of single-line, paragraph and post body fields</td>
+<td>The entry is marked as spam; you find it among the form's spam entries.</td>
+</tr>
+<tr>
+<td>WPForms</td>
+<td>The name and email fields and the text of single-line and paragraph fields</td>
+<td>The submission is refused, and the visitor sees “Your submission has been flagged as spam.”</td>
+</tr>
+</tbody>
+</table>
+<p>Pingbacks, trackbacks and comments from users who can moderate comments aren't
+checked. Contact Form 7 and Gravity Forms submissions that another spam check
+already caught aren't sent to SpamAPI and don't use a check. WPForms keeps no
+spam list, so a visitor whose message was wrongly refused has to reach you
+another way. Other form plugins aren't supported.</p>
+<h2 id="check-that-it-works">Check that it works<a class="headerlink" href="#check-that-it-works" title="Permanent link">&para;</a></h2>
+<p>Sign out of WordPress, or open a private browser window, and post a comment or
+submit a form with the email address <code>spam@test.spamapi.com</code>. SpamAPI always
+classifies this <a href="../test-mode/">test value</a> as spam without using a check, so it
+should end up as described above. Then send a normal message to confirm that it
+goes through.</p>
+<p>Each checked comment or submission uses one of your monthly checks. Follow them
+on the settings page or the dashboard's <a href="https://app.spamapi.de/dashboard/usage">usage page</a>.</p>
 <h2 id="shared-model-contributions">Shared model contributions<a class="headerlink" href="#shared-model-contributions" title="Permanent link">&para;</a></h2>
 <p>Shared-model participation is optional and disabled by default, for both free
 and paid accounts. Ordinary checks and legacy feedback do not opt you in. Test

@@ -17,6 +17,7 @@
         <link href="../../css/base.css" rel="stylesheet">
         <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" disabled>
         <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <link href="../../stylesheets/extra.css" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
         <script>hljs.highlightAll();</script> 
     </head>
@@ -38,19 +39,28 @@
                                 <a href="../.." class="nav-link">Home</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Integrate</a>
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Get started</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../getting-started/" class="dropdown-item">Getting started</a>
+    <a href="../getting-started/" class="dropdown-item">REST API quickstart</a>
 </li>
+                                    
+<li>
+    <a href="../wordpress-plugin/" class="dropdown-item">WordPress setup</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Reference</a>
+                                <ul class="dropdown-menu">
                                     
 <li>
     <a href="../api-reference/" class="dropdown-item">API reference</a>
 </li>
                                     
 <li>
-    <a href="../wordpress-plugin/" class="dropdown-item">WordPress plugin</a>
+    <a href="../errors-and-limits/" class="dropdown-item">Errors and limits</a>
 </li>
                                     
 <li>
@@ -64,6 +74,19 @@
                             </li>
                             <li class="nav-item">
                                 <a href="../../security/" class="nav-link">Security policy</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">SpamAPI</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="https://spamapi.de/" class="dropdown-item">Website</a>
+</li>
+                                    
+<li>
+    <a href="https://app.spamapi.de/dashboard" class="dropdown-item">Dashboard</a>
+</li>
+                                </ul>
                             </li>
                         </ul>
 
@@ -133,7 +156,15 @@
             
             <li class="nav-item" data-bs-level="1"><a href="#troubleshooting" class="nav-link">Troubleshooting</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#400-bad-request" class="nav-link">400 Bad Request</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-bs-level="2"><a href="#401-unauthorized" class="nav-link">401 Unauthorized</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#403-forbidden" class="nav-link">403 Forbidden</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -149,6 +180,18 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-bs-level="2"><a href="#every-result-looks-the-same" class="nav-link">Every result looks the same</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#wordpress-plugin" class="nav-link">WordPress plugin</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#contact-support" class="nav-link">Contact support</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -157,30 +200,86 @@
                     <div class="col-md-9" role="main">
 
 <h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h1>
+<p>Find the HTTP status or symptom below. <a href="../errors-and-limits/">Errors and limits</a>
+lists every error code.</p>
+<h2 id="400-bad-request">400 Bad Request<a class="headerlink" href="#400-bad-request" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>validation_error</code>: <code>message</code> names the field. <code>blog</code> and <code>user_ip</code> are
+  required, and <code>user_ip</code> must be the visitor's IPv4 or IPv6 address, not a
+  hostname.</li>
+<li><code>invalid_json</code>: the body isn't valid JSON. Send it with
+  <code>Content-Type: application/json</code> and check the quoting in shell commands.</li>
+</ul>
 <h2 id="401-unauthorized">401 Unauthorized<a class="headerlink" href="#401-unauthorized" title="Permanent link">&para;</a></h2>
 <ul>
-<li>API key missing or invalid.</li>
-<li>For dashboard endpoints, ensure the session cookie or Authorization header is present.</li>
+<li><code>missing_api_key</code>: send the key in the <code>X-API-Key</code> header.</li>
+<li><code>invalid_api_key</code>: the key is mistyped, revoked or not a SpamAPI key. Keys
+  start with <code>spa_</code>; Stripe keys don't work. Check the
+  <a href="https://app.spamapi.de/dashboard/keys">API keys page</a> and create a new key if
+  needed; the full key is shown only when it is created.</li>
+<li>If you also send <code>api_key</code> in the JSON body, it must be the same key as the
+  header.</li>
+</ul>
+<h2 id="403-forbidden">403 Forbidden<a class="headerlink" href="#403-forbidden" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>account_unavailable</code>: the account can't use the API.
+  <a href="#contact-support">Contact support</a>.</li>
 </ul>
 <h2 id="429-too-many-requests">429 Too Many Requests<a class="headerlink" href="#429-too-many-requests" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Rate limit exceeded.</li>
-<li>Monthly usage limit exceeded.</li>
+<li><code>rate_limit_exceeded</code>: too many requests in a minute. Wait for the seconds in
+  <code>Retry-After</code>, then slow down. See the <a href="../errors-and-limits/#rate-limits">rate limits</a>.</li>
+<li><code>usage_limit_exceeded</code>: this month's checks are used up. They reset at the
+  start of the next UTC month; <code>GET /api/v1/usage</code> returns the time in
+  <code>resets_at</code>. To continue now, upgrade on the dashboard's
+  <a href="https://app.spamapi.de/dashboard/billing">Billing page</a>.</li>
 </ul>
 <h2 id="5xx-errors">5xx Errors<a class="headerlink" href="#5xx-errors" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Retain the request ID from the response when reporting a problem to support.</li>
-<li>Retry transient failures with a bounded delay and avoid repeated rapid requests.</li>
+<li>Retry with a growing delay, not in a tight loop. A retried check is a new
+  check.</li>
+<li>Note the <code>X-Request-ID</code> response header for support.</li>
 </ul>
 <h2 id="503-service-unavailable">503 Service Unavailable<a class="headerlink" href="#503-service-unavailable" title="Permanent link">&para;</a></h2>
 <ul>
-<li>HTTP <code>503</code> with <code>detection_unavailable</code> means SpamAPI could not complete the
-  spam check. The response contains no spam decision and does not consume
-  classification usage.</li>
+<li><code>detection_unavailable</code> means SpamAPI could not complete the spam check. The
+  response contains no spam decision and does not use a check.</li>
 <li>Keep the submission pending for a later retry or manual review. Do not treat
   this error as a successful check or as a decision to allow the submission.</li>
-<li>See the <a href="../api-reference/">API reference</a> for response and error formats.</li>
-</ul></div>
+<li><code>quota_unavailable</code> means SpamAPI couldn't read or record usage. Retry later.</li>
+</ul>
+<h2 id="every-result-looks-the-same">Every result looks the same<a class="headerlink" href="#every-result-looks-the-same" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Requests with <code>is_test: true</code> and <code>user_role: "administrator"</code> always return
+  ham, and the <a href="../test-mode/">test values</a> always return spam, without
+  classification. Remove them from real traffic.</li>
+<li>Send the submission's text in <code>comment_content</code> and the author details you
+  have. A request with only <code>blog</code> and <code>user_ip</code> gives SpamAPI little to go on.</li>
+</ul>
+<h2 id="wordpress-plugin">WordPress plugin<a class="headerlink" href="#wordpress-plugin" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Connection failed: Invalid Key</strong>: paste the key again, click
+  <strong>Save Settings</strong>, then <strong>Test Connection</strong>. The test uses the saved key.</li>
+<li><strong>Connection failed</strong> with another message: the site couldn't reach SpamAPI,
+  or SpamAPI answered with an error such as too many requests. Wait a minute and
+  try again. Leave <strong>API URL</strong> at its default unless you run your own SpamAPI
+  server, and check that the server allows outgoing HTTPS requests.</li>
+<li><strong>Nothing is checked</strong>: <strong>Enable spam protection</strong> must be checked and saved.
+  Comments from users who can moderate comments, pingbacks, trackbacks and
+  unsupported form plugins aren't checked; see the
+  <a href="../wordpress-plugin/#supported-comments-and-forms">supported comments and forms</a>.</li>
+<li><strong>Spam got through</strong>: if SpamAPI can't answer, the plugin lets the comment or
+  submission through and writes the error to the PHP error log. This also
+  happens when the month's checks are used up; the plugin's settings page shows
+  the usage. Choose a higher <strong>Strictness Level</strong> to block more.</li>
+<li><strong>A legitimate message was blocked</strong>: approve the comment from the spam list,
+  or find the entry among the form's spam entries. Choose a lower
+  <strong>Strictness Level</strong> to block less.</li>
+</ul>
+<h2 id="contact-support">Contact support<a class="headerlink" href="#contact-support" title="Permanent link">&para;</a></h2>
+<p>Write to <code>support@spamapi.de</code> with the time of the request, the endpoint, the
+HTTP status, the <code>error</code> code and the <code>X-Request-ID</code> response header. Never send
+your API key.</p></div>
             </div>
         </div>
 
